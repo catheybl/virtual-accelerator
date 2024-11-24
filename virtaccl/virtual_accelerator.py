@@ -129,10 +129,9 @@ ServerType = TypeVar('ServerType', bound='Server')
 
 
 class VirtualAcceleratorBuilder(Generic[ModelType, ServerType]):
-    def __init__(self, model: ModelType, beam_line: BeamLine, server: ServerType, **kwargs):
+    def __init__(self, model: ModelType, beam_line: BeamLine, **kwargs):
         self.model = model
         self.beam_line = beam_line
-        self.server = server
         self.options = kwargs
 
     def get_model(self) -> ModelType:
@@ -141,15 +140,12 @@ class VirtualAcceleratorBuilder(Generic[ModelType, ServerType]):
     def get_beamline(self) -> BeamLine:
         return self.beam_line
 
-    def get_server(self) -> ServerType:
-        return self.server
-
     def build(self) -> 'VirtualAccelerator[ModelType, ServerType]':
-        return VirtualAccelerator(self.model, self.beam_line, self.server, **self.options)
+        return VirtualAccelerator(self.model, self.beam_line, **self.options)
 
 
 class VirtualAccelerator(Generic[ModelType, ServerType]):
-    def __init__(self, model: ModelType, beam_line: BeamLine, server: ServerType, **kwargs):
+    def __init__(self, model: ModelType, beam_line: BeamLine, **kwargs):
         if not kwargs:
             kwargs = VA_Parser().initialize_arguments()
 
@@ -166,17 +162,17 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
         self.sync_time = kwargs['sync_time']
         self.update_period = 1 / kwargs['refresh_rate']
 
-        sever_parameters = beam_line.get_server_parameter_definitions()
-        server.add_parameters(sever_parameters)
-        beam_line.reset_devices()
-
-        if kwargs['debug']:
-            print(server)
-
         self.model = model
         self.beam_line = beam_line
-        self.server = server
+        self.dead_server = Server()
 
+        sever_parameters = self.beam_line.get_server_parameter_definitions()
+        self.dead_server.add_parameters(sever_parameters)
+
+        if kwargs['debug']:
+            print(self.dead_server)
+
+        self.beam_line.reset_devices()
         self.track()
 
     def get_model(self) -> ModelType:
@@ -185,34 +181,34 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
     def get_beamline(self) -> BeamLine:
         return self.beam_line
 
-    def get_server(self) -> ServerType:
-        return self.server
-
     def set_value(self, server_key: str, new_value):
-        self.server.set_parameter(server_key, new_value)
+        self.dead_server.set_parameter(server_key, new_value)
         self.track()
 
     def set_values(self, new_settings: Dict[str, Any]):
-        self.server.set_parameters(new_settings)
+        self.dead_server.set_parameters(new_settings)
         self.track()
 
     def get_value(self, *server_key: str):
         if len(server_key) == 1:
-            return self.server.get_parameter(server_key[0])
+            return self.dead_server.get_parameter(server_key[0])
         else:
-            return tuple(self.server.get_parameter(key) for key in server_key)
+            return tuple(self.dead_server.get_parameter(key) for key in server_key)
 
     def get_values(self, value_keys: List[str] = None) -> Dict[str, Any]:
         if value_keys is not None:
             return_dict = {}
             for key in value_keys:
-                return_dict |= {key: self.server.get_parameter(key)}
+                return_dict |= {key: self.dead_server.get_parameter(key)}
         else:
-            return_dict = self.server.get_parameters()
+            return_dict = self.dead_server.get_parameters()
         return return_dict
 
-    def track(self, timestamp: datetime = None):
-        server_parameters = self.server.get_parameters()
+    def track(self, server: ServerType = None, timestamp: datetime = None):
+        if server is None:
+            server = self.dead_server
+
+        server_parameters = server.get_parameters()
         self.beam_line.update_settings_from_server(server_parameters)
         new_optics = self.beam_line.get_model_optics()
 
@@ -223,10 +219,11 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
         self.beam_line.update_measurements_from_model(new_measurements)
         self.beam_line.update_readbacks()
         new_server_values = self.beam_line.get_parameters_for_server()
-        self.server.set_parameters(new_server_values, timestamp=timestamp)
+        server.set_parameters(new_server_values, timestamp=timestamp)
 
-    def start_server(self):
-        self.server.start()
+    def start_server(self, live_server: ServerType):
+        self.dead_server = None
+        live_server.start()
         print(f"Server started.")
         now = None
 
@@ -236,8 +233,8 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
 
             if self.sync_time:
                 now = datetime.now()
-            self.track(timestamp=now)
-            self.server.update()
+            self.track(live_server, timestamp=now)
+            live_server.update()
 
             loop_time_taken = time.time() - loop_start_time
             sleep_time = self.update_period - loop_time_taken
