@@ -1,11 +1,14 @@
+import importlib
+import sys
 import time
+from copy import deepcopy
 from datetime import datetime
 from typing import Union, List, Dict, Any
 from pathlib import Path
 import json
 
 from orbit.py_linac.lattice import BaseLinacNode
-from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice
+from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, Sequence
 from orbit.core.bunch import Bunch
 from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
 from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
@@ -14,6 +17,102 @@ from .pyorbit_element_controllers import PyorbitNode, PyorbitChild, PyorbitCavit
 from .pyorbit_va_nodes import BunchCopyClass, PhysicsClass
 
 from virtaccl.model import Model
+
+import importlib
+
+
+def dynamic_clone(obj):
+    """Clone an object by dynamically importing its class."""
+    # Get the full class path of the object
+    cls = type(obj)
+    module_name = cls.__module__
+    class_name = cls.__name__
+
+    # Dynamically import the module
+    module = importlib.import_module(module_name)
+
+    # Get the class from the module
+    obj_class = getattr(module, class_name)
+
+    # Create a new instance
+    new_obj = obj_class.__new__(obj_class)
+
+    # Copy attributes
+    if hasattr(obj, "__dict__"):
+        print(obj.__dict__.keys())
+        print(obj.__dict__['_AccLattice__childPositions'])
+        sys.exit()
+        for node in obj.__dict__['_AccLattice__children']:
+            # Recursively clone nested objects or assign primitives directly
+            if hasattr(value, "__dict__"):
+                setattr(new_obj, key, dynamic_clone(value))
+            else:
+                setattr(new_obj, key, value)
+
+    return new_obj
+
+
+def copy_pyorbit_lattice(input_lattice: LinacAccLattice) -> LinacAccLattice:
+    model_lattice = LinacAccLattice(input_lattice.getName())
+    for in_seq in input_lattice.getSequences():
+        new_seq = Sequence(in_seq.getName())
+        model_lattice.addSequence(new_seq)
+
+        list_of_nodes = []
+        in_nodes = in_seq.getNodes()
+        for in_node in in_nodes:
+            new_node = type(in_node).__new__(type(in_node))
+            print(new_node.getType())
+            for attr, value in in_node.__dict__.items():
+                #print(attr)
+                if isinstance(in_node, type) and hasattr(value, '__module__'):
+                    print(value.__module__)
+                    # Dynamically import the module of the class and recreate
+
+                    #module = importlib.import_module(value.__module__)
+                    #recreated = getattr(module, value.__class__.__name__)(**value.__dict__)
+
+            #list_of_nodes.append(node)
+            #model_lattice.addNode(node)
+        sys.exit()
+
+        new_seq.setNodes(list_of_nodes)
+    model_lattice.initialize()
+
+    input_quad = input_lattice.getNodeForName('MEBT_Mag:QH01')
+    model_quad = model_lattice.getNodeForName('MEBT_Mag:QH01')
+    print(input_quad.getParam('dB/dr'), model_quad.getParam('dB/dr'))
+    input_quad.setParam('dB/dr', -2)
+    model_quad.setParam('dB/dr', 10)
+    print(input_quad.getParam('dB/dr'), model_quad.getParam('dB/dr'))
+
+    # for seq in model_lattice.getSequences():
+    #    for node in seq.getNodes():
+    #        if node.getName() == 'MEBT_Mag:QH01':
+    #            print(node.getParamsDict())
+    sys.exit()
+    return model_lattice
+
+
+
+
+    sys.exit()
+
+
+
+    self.initialize()
+    # ------ the positions of the nodes inside sequences will be defined by their positions
+    # ------ inside their order in the AccLattice. It is necessary for the reverse order
+    # ------ operation.
+    node_pos_dict = self.getNodePositionsDict()
+    for seq in seqs:
+        pos_seq_start = seq.getPosition()
+        nodes = seq.getNodes()
+        for node in nodes:
+            (pos_start, pos_stop) = node_pos_dict[node]
+            node.setPosition((pos_start + pos_stop) / 2.0 - pos_seq_start)
+        nodes = sorted(nodes, key=lambda x: x.getPosition(), reverse=False)
+        seq.setNodes(nodes)
 
 
 class OrbitModel(Model):
@@ -117,6 +216,15 @@ class OrbitModel(Model):
         """
 
         self.accLattice = input_lattice
+        model_lattice = dynamic_clone(self.accLattice)
+        input_quad = input_lattice.getNodeForName('MEBT_Mag:QH01')
+        model_quad = model_lattice.getNodeForName('MEBT_Mag:QH01')
+        print(input_quad.getParam('dB/dr'), model_quad.getParam('dB/dr'))
+        input_quad.setParam('dB/dr', -2)
+        # model_quad.setParam('dB/dr', 10)
+        print(input_quad.getParam('dB/dr'), model_quad.getParam('dB/dr'))
+        sys.exit()
+
         # Here we find the node types in PyORBIT we need to worry about and start a set to make sure each element we do
         # care about has a unique name.
         included_nodes = self.modeled_elements
