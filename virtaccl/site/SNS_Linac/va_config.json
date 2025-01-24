@@ -1394,7 +1394,7 @@
         "MEBT_Mag:DCH04": {
             "PyORBIT_Name": "MEBT_Mag:DCH04",
             "Power_Supply": "MEBT_Mag:PS_DCH04",
-            "Polarity": -1
+            "Polarity": 1
         },
         "MEBT_Mag:DCV04": {
             "PyORBIT_Name": "MEBT_Mag:DCV04",
@@ -1404,7 +1404,7 @@
         "MEBT_Mag:DCH05": {
             "PyORBIT_Name": "MEBT_Mag:DCH05",
             "Power_Supply": "MEBT_Mag:PS_DCH05",
-            "Polarity": 1
+            "Polarity": -1
         },
         "MEBT_Mag:DCV05": {
             "PyORBIT_Name": "MEBT_Mag:DCV05",
@@ -1414,7 +1414,7 @@
         "MEBT_Mag:DCH10": {
             "PyORBIT_Name": "MEBT_Mag:DCH10",
             "Power_Supply": "MEBT_Mag:PS_DCH10",
-            "Polarity": 1
+            "Polarity": -1
         },
         "MEBT_Mag:DCV10": {
             "PyORBIT_Name": "MEBT_Mag:DCV10",
@@ -1424,7 +1424,7 @@
         "MEBT_Mag:DCH11": {
             "PyORBIT_Name": "MEBT_Mag:DCH11",
             "Power_Supply": "MEBT_Mag:PS_DCH11",
-            "Polarity": 1
+            "Polarity": -1
         },
         "MEBT_Mag:DCV11": {
             "PyORBIT_Name": "MEBT_Mag:DCV11",

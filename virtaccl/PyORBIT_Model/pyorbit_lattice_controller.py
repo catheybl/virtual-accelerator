@@ -8,7 +8,7 @@ from pathlib import Path
 import json
 
 from orbit.py_linac.lattice import BaseLinacNode
-from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, Sequence
+from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, Sequence, RF_Cavity
 from orbit.core.bunch import Bunch
 from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
 from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
@@ -21,35 +21,99 @@ from virtaccl.model import Model
 import importlib
 
 
-def dynamic_clone(obj):
-    """Clone an object by dynamically importing its class."""
-    # Get the full class path of the object
-    cls = type(obj)
-    module_name = cls.__module__
-    class_name = cls.__name__
+def copy_lattice(input_lattice: LinacAccLattice) -> LinacAccLattice:
 
-    # Dynamically import the module
-    module = importlib.import_module(module_name)
+    lattice_name = input_lattice.getName()
+    new_lattice = LinacAccLattice(lattice_name)
 
-    # Get the class from the module
-    obj_class = getattr(module, class_name)
+    def copy_parameter_dictionary(input_params: Dict[str, Any]) -> Dict[str, Any]:
+        new_params = {}
+        primitive_types = (int, float, bool, str, bytes, type(None))
+        for key, value in input_params.items():
+            if isinstance(value, primitive_types):
+                new_params[key] = deepcopy(value)
+        return new_params
 
-    # Create a new instance
-    new_obj = obj_class.__new__(obj_class)
+    new_sequences = {}
+    for seq in input_lattice.getSequences():
+        seq_name = seq.getName()
+        seq_params = seq.getParamsDict()
+        new_seq = Sequence(seq_name)
+        new_seq.setParamsDict(copy_parameter_dictionary(seq_params))
+        new_sequences[seq_name] = new_seq
 
-    # Copy attributes
-    if hasattr(obj, "__dict__"):
-        print(obj.__dict__.keys())
-        print(obj.__dict__['_AccLattice__childPositions'])
-        sys.exit()
-        for node in obj.__dict__['_AccLattice__children']:
-            # Recursively clone nested objects or assign primitives directly
-            if hasattr(value, "__dict__"):
-                setattr(new_obj, key, dynamic_clone(value))
-            else:
-                setattr(new_obj, key, value)
+    new_cavities = {}
+    for cav in input_lattice.getRF_Cavities():
+        cav_name = cav.getName()
+        cav_params = cav.getParamsDict()
+        new_cavity = RF_Cavity(cav_name)
+        new_cavity.setParamsDict(copy_parameter_dictionary(cav_params))
+        new_cavities[cav_name] = new_cavity
 
-    return new_obj
+    def copy_lattice_node(input_node: BaseLinacNode, **kwargs) -> BaseLinacNode:
+        """Clone an object by dynamically importing its class."""
+        # Get the full class path of the object
+        node_name = input_node.getName()
+        node_params = input_node.getParamsDict()
+
+        cls = type(input_node)
+        module_name = cls.__module__
+        class_name = cls.__name__
+        module = importlib.import_module(module_name)
+        node_class = getattr(module, class_name)
+
+        if input_node.getType() == 'quad fringe in':
+            copied_node = node_class(parentNode=kwargs['parentNode'])
+        else:
+            copied_node = node_class(name=node_name)
+        copied_node.setParamsDict(copy_parameter_dictionary(node_params))
+
+        if copied_node.getType() == 'baserfgap':
+            cavity_name = lattice_node.getRF_Cavity().getName()
+            copied_node.setRF_Cavity(new_cavities[cavity_name])
+
+        child_nodes_array = input_node.__dict__['_AccNode__childNodesArr']
+        entrance_nodes = child_nodes_array[0]
+        body_nodes = child_nodes_array[1]
+        exit_nodes = child_nodes_array[2]
+
+        for child_node in entrance_nodes:
+            print(child_node.getName(), child_node.__dict__.keys())
+            new_child = copy_lattice_node(child_node, parentNode=input_node)
+            copied_node.addChildNode(new_child, 0)
+
+        part_number = 0
+        for node_part in body_nodes:
+            before_nodes = node_part[0]
+            for child_node in before_nodes:
+                print(child_node.getName(), child_node.__dict__.keys())
+                new_child = copy_lattice_node(child_node, parentNode=input_node)
+                copied_node.addChildNode(new_child, 1, part_number, 0)
+
+            after_nodes = node_part[0]
+            for child_node in after_nodes:
+                print(child_node.getName(), child_node.__dict__.keys())
+                new_child = copy_lattice_node(child_node, parentNode=input_node)
+                copied_node.addChildNode(new_child, 1, part_number, 1)
+
+            part_number += 1
+
+        for child_node in exit_nodes:
+            print(child_node.getName(), child_node.__dict__.keys())
+            new_child = copy_lattice_node(child_node, parentNode=input_node)
+            copied_node.addChildNode(new_child, 2)
+
+        return copied_node
+
+    for lattice_node in input_lattice.getNodes():
+        new_node = copy_lattice_node(lattice_node)
+        sequence_name = lattice_node.getSequence().getName()
+        new_sequences[sequence_name].addNode(new_node)
+        new_lattice.addNode(new_node)
+        #print(lattice_node.getParamsDict())
+
+    new_lattice.initialize()
+    return new_lattice
 
 
 def copy_pyorbit_lattice(input_lattice: LinacAccLattice) -> LinacAccLattice:
@@ -64,16 +128,16 @@ def copy_pyorbit_lattice(input_lattice: LinacAccLattice) -> LinacAccLattice:
             new_node = type(in_node).__new__(type(in_node))
             print(new_node.getType())
             for attr, value in in_node.__dict__.items():
-                #print(attr)
+                # print(attr)
                 if isinstance(in_node, type) and hasattr(value, '__module__'):
                     print(value.__module__)
                     # Dynamically import the module of the class and recreate
 
-                    #module = importlib.import_module(value.__module__)
-                    #recreated = getattr(module, value.__class__.__name__)(**value.__dict__)
+                    # module = importlib.import_module(value.__module__)
+                    # recreated = getattr(module, value.__class__.__name__)(**value.__dict__)
 
-            #list_of_nodes.append(node)
-            #model_lattice.addNode(node)
+            # list_of_nodes.append(node)
+            # model_lattice.addNode(node)
         sys.exit()
 
         new_seq.setNodes(list_of_nodes)
@@ -93,12 +157,7 @@ def copy_pyorbit_lattice(input_lattice: LinacAccLattice) -> LinacAccLattice:
     sys.exit()
     return model_lattice
 
-
-
-
     sys.exit()
-
-
 
     self.initialize()
     # ------ the positions of the nodes inside sequences will be defined by their positions
@@ -216,7 +275,7 @@ class OrbitModel(Model):
         """
 
         self.accLattice = input_lattice
-        model_lattice = dynamic_clone(self.accLattice)
+        model_lattice = copy_lattice(self.accLattice)
         input_quad = input_lattice.getNodeForName('MEBT_Mag:QH01')
         model_quad = model_lattice.getNodeForName('MEBT_Mag:QH01')
         print(input_quad.getParam('dB/dr'), model_quad.getParam('dB/dr'))

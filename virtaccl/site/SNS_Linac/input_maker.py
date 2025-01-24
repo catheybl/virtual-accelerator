@@ -4,8 +4,8 @@ from pathlib import Path
 from random import random
 import argparse
 
-from virtaccl.PyORBIT_Model.pyorbit_lattice_factory import PyORBIT_Lattice_Factory
-
+from virtaccl.PyORBIT_Model.pyorbit_va_nodes import BPMclass, WSclass
+from virtaccl.site.SNS_Linac.orbit_model.sns_linac_lattice_factory import PyORBIT_Lattice_Factory
 from virtaccl.PyORBIT_Model.pyorbit_lattice_controller import OrbitModel
 
 
@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--file', '-f', default='va_config.json', type=str,
                         help='Pathname of resulting config json file.')
 
-    parser.add_argument('--lattice', default='PyORBIT_Model/SNS/sns_linac.xml', type=str,
+    parser.add_argument('--lattice', default='orbit_model/sns_linac.xml', type=str,
                         help='Pathname of lattice file')
 
     parser.add_argument("Sequences", nargs='*', help='Sequences',
@@ -41,7 +41,10 @@ def main():
     sns_linac_factory = PyORBIT_Lattice_Factory()
     model_lattice = sns_linac_factory.getLinacAccLattice(subsections, lattice_file)
 
-    model = OrbitModel(model_lattice)
+    model = OrbitModel()
+    model.define_custom_node(BPMclass.node_type, BPMclass.parameter_list, diagnostic=True)
+    model.define_custom_node(WSclass.node_type, WSclass.parameter_list, diagnostic=True)
+    model.initialize_lattice(model_lattice)
 
     quad_doublets = {'SCL': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '12', '13', '14', '15', '16',
                              '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29']}
