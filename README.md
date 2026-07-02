@@ -139,6 +139,14 @@ Run with default bunch
 idmp_va --debug
 ```
 
+### Turn Beam on and Off
+Beam defaults to on, but for some scenarios it may be useful to turn it off while the server is still running, e.g. 
+simulating missed pulses. Use the `VIRAC:beam_state` enum PV to turn the beam on and off.
+```bash
+caput VIRAC:beam_state OFF
+caput VIRAC:beam_state ON
+```
+
 ## Tools
 
 ### Wire Scanner

@@ -191,6 +191,11 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
             "value": 0.0,
             "count": 1
         })
+        server.add_parameter("VIRAC:beam_state",{
+            "type": "enum",
+            "value": 1,
+            "enums": ["OFF", "ON"]
+        })
         beam_line.reset_devices()
 
         if kwargs['debug']:
@@ -276,6 +281,8 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
             now_ts = now.timestamp()- EPICS_EPOCH_OFFSET
             if now_ts > next_beam_time:
                 next_beam_time += self.update_period
+                if self.server.get_parameter("VIRAC:beam_state") == 0:
+                    continue
                 # Beam event generates a new pulse and updates measurements,
                 # unchanged from prior virac loop
                 beam_event = Event(
@@ -338,4 +345,8 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
         device_name = event.device
         attr = event.attr
         value = event.value
+        if device_name == "VIRAC":
+            if attr == "beam_state":
+                self.server.set_parameter("VIRAC:beam_state", value)
+            return
         self.beam_line.devices[device_name].handle_ca_event(attr, value)
