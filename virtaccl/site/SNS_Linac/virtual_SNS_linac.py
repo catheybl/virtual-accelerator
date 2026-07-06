@@ -85,13 +85,6 @@ def build_sns(**kwargs):
     beam_current = kwargs['beam_current'] / 1000  # Set the initial beam current in Amps.
     bunch_frequency = 402.5e6
     si_e_charge = 1.6021773e-19
-    # List of PyORBIT names of devices that have physics nodes.
-    physics_devices = [
-        "HEBT_Diag:WS01",
-        "HEBT_Diag:WS02",
-        "HEBT_Diag:WS03",
-        "HEBT_Diag:WS04",
-    ]
 
     if isinstance(kwargs['bunch'], Bunch):
         bunch_in = kwargs['bunch']
@@ -247,7 +240,12 @@ def build_sns(**kwargs):
     delay = kwargs['ca_proc']
     server = EPICS_Server(process_delay=delay)
 
-    sns_virac = PyorbitVirtualAcceleratorBuilder(model, beam_line, server, physics_devices, **kwargs)
+    sns_virac = PyorbitVirtualAcceleratorBuilder(model, beam_line, server, **kwargs)
+    # List of PyORBIT names of devices that have physics nodes.
+    physics_devices = [
+
+    ]
+    sns_virac.add_some_physics_nodes(physics_devices)
 
     return sns_virac
 

@@ -37,13 +37,11 @@ def add_pyorbit_arguments(va_parser: VA_Parser) -> VA_Parser:
 
 
 class PyorbitVirtualAcceleratorBuilder(VirtualAcceleratorBuilder[OrbitModel, Server]):
-    def __init__(self, model: OrbitModel, beam_line: BeamLine, server: Server,physics_devices: None | list[str], **kwargs):
+    def __init__(self, model: OrbitModel, beam_line: BeamLine, server: Server, **kwargs):
         super().__init__(model, beam_line, server, **kwargs)
 
         if kwargs['physics_nodes']:
             self.add_all_physics_nodes()
-        else:
-            self.add_some_physics_nodes(physics_devices)
 
     # If the user wants to add physics nodes to specific devices this will
     # populate the model with them.
