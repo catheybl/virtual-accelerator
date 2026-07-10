@@ -27,12 +27,13 @@ class SNS_Cavity(Cavity):
     reset_pv = 'AFF_Reset'
     MPS_pv = 'FPAR_LDmp_swmask_set'
 
-    def __init__(self, name: str, model_name: str = None,init_phase = 0, init_amp = 1.0,design_amp=1,offset_phase=0):
+    def __init__(self, name: str, model_name: str = None, initial_dict: Dict[str, Any] = None, phase_offset=0,
+                 design_amp=15):
         if model_name is None:
             self.model_name = name
         else:
             self.model_name = model_name
-        super().__init__(name, self.model_name,init_phase, init_amp,design_amp,offset_phase)
+        super().__init__(name, self.model_name, initial_dict, phase_offset, design_amp)
 
         net_pwr_name = name.split(':')[0] + ':Cav' + name[-1] + ':' + SNS_Cavity.net_power_pv
         mps_name = name.replace('FCM', 'HPM', 1) + ':' + SNS_Cavity.MPS_pv
