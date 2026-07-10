@@ -119,24 +119,30 @@ def build_sns(**kwargs):
     element_list = model.get_element_list()
 
     beam_line = BeamLine()
-
-    offset_file = kwargs['phase_offset']
-    if offset_file is not None:
-        with open(offset_file, "r") as json_file:
-            offset_dict = json.load(json_file)
+    cav_offsets = None
+    bpm_offsets = None
+    rf_sync_file = None
+    if kwargs['phase_offset'] is not None:
+        loc = Path(__file__).parent
+        rf_sync_file = loc / kwargs['phase_offset']
+        with open(rf_sync_file, "r") as json_file:
+            rf_dict = json.load(json_file)
+            cav_sync_dict = rf_dict["RF_Cavity"]
+            bpm_sync_dict = rf_dict["BPM"]
 
     cavities = devices_dict["RF_Cavity"]
     for name, device_dict in cavities.items():
         ele_name = device_dict["PyORBIT_Name"]
         if ele_name in element_list:
-            amplitude = device_dict["Design_Amplitude"]
+            cavity_dict = {}
+            # amplitude = device_dict["Design_Amplitude"]
             initial_settings = model.get_element_parameters(ele_name)
             initial_settings['amp'] = 1
-            phase_offset = 0
-            if offset_file is not None:
-                phase_offset = offset_dict[name]
-            rf_device = SNS_Cavity(name, ele_name, initial_dict=initial_settings, phase_offset=phase_offset,
-                                   design_amp=amplitude)
+            cavity_dict['init_amp'] = initial_settings['amp']
+            cavity_dict['init_phase'] = initial_settings['phase']
+            if rf_sync_file is not None and ele_name in cav_sync_dict:
+                cavity_dict = cav_sync_dict[ele_name]
+            rf_device = SNS_Cavity(name, ele_name, **cavity_dict)
             beam_line.add_device(rf_device)
 
     quad_ps_names = devices_dict["Quadrupole_Power_Supply"]
@@ -226,8 +232,8 @@ def build_sns(**kwargs):
         ele_name = device_dict["PyORBIT_Name"]
         if ele_name in element_list:
             phase_offset = 0
-            if offset_file is not None:
-                phase_offset = offset_dict[name]
+            if bpm_offsets is not None and name in bpm_offsets:
+                phase_offset = bpm_offsets[name]
 
             bpm_device = BPM(name, ele_name, phase_offset=phase_offset)
             beam_line.add_device(bpm_device)
