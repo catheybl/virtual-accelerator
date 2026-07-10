@@ -56,6 +56,7 @@ def build_sns(**kwargs):
     debug = kwargs['debug']
     save_bunch = kwargs['save_bunch']
     refresh_rate = kwargs['refresh_rate']
+    update_frequency = kwargs['device_frequency']
 
     config_file = Path(kwargs['config_file'])
     with open(config_file, "r") as json_file:
@@ -222,7 +223,8 @@ def build_sns(**kwargs):
         if model_name in element_list:
             # Passing refresh rate to the WireScanner device for velocity calculations.
             ws_device = WireScanner(name, model_name, {
-                'refresh_rate':refresh_rate})
+                'refresh_rate':refresh_rate,
+                'update_frequency':update_frequency})
             beam_line.add_device(ws_device)
 
     bpms = devices_dict["BPM"]
@@ -245,6 +247,11 @@ def build_sns(**kwargs):
     server = EPICS_Server(process_delay=delay)
 
     sns_virac = PyorbitVirtualAcceleratorBuilder(model, beam_line, server, **kwargs)
+    # List of PyORBIT names of devices that have physics nodes.
+    physics_devices = [
+
+    ]
+    sns_virac.add_some_physics_nodes(physics_devices)
 
     return sns_virac
 
