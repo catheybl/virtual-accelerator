@@ -87,8 +87,15 @@ class PhaseTInv(LinearTInv):
 
     @staticmethod
     def wrap_phase_deg(deg):
-        x = deg % 360
-        return x - 360 if x > 180 else x
+        if isinstance(deg, float):
+            x = deg % 360
+            return x - 360 if x > 180 else x
+        if isinstance(deg, list) or isinstance(deg, np.ndarray):
+            x = deg[0] % 360
+            n = deg[0] // 360
+            return [deg - 360 * (n + 1) if x > 180 else deg - 360 * n  for deg in deg]
+
+
 
     @staticmethod
     def wrap_phase_rad(rad):
