@@ -1,14 +1,26 @@
 import sys
+import threading
 import time
 import argparse
+import queue
 from datetime import datetime
+from dataclasses import dataclass
 from importlib.metadata import version
-from typing import Dict, Any, List, TypeVar, Generic
+from typing import Dict, Any, List, TypeVar, Generic, Optional
 
 from virtaccl.server import Server, not_ctrlc
 from virtaccl.beam_line import BeamLine
 from virtaccl.model import Model
 
+EPICS_EPOCH_OFFSET = 631152000.0
+
+@dataclass
+class Event:
+    type: str
+    device: Optional[str] = None
+    attr: Optional[str] = None
+    value: Optional[float] = None
+    time: Optional[datetime] = None
 
 class VA_Parser:
     def __init__(self):
@@ -104,6 +116,8 @@ def add_va_arguments(va_parser: VA_Parser) -> VA_Parser:
     # Number (in Hz) determining the update rate for the virtual accelerator.
     va_parser.add_va_argument('--refresh_rate', default=1.0, type=float,
                               help='Rate (in Hz) at which the virtual accelerator updates.')
+    va_parser.add_va_argument('--device_frequency', default=10.0, type=float,
+                              help='Rate (in Hz) at which the server updates.')
     va_parser.add_va_argument('--sync_time', dest='sync_time', action='store_true',
                               help="Synchronize timestamps for server parameters.")
 
@@ -165,13 +179,23 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
 
         self.sync_time = kwargs['sync_time']
         self.update_period = 1 / kwargs['refresh_rate']
+        self.server_period = 1 / kwargs['device_frequency']
 
         self.model = model
         self.beam_line = beam_line
         self.server = server
 
-        sever_parameters = beam_line.get_server_parameter_definitions()
-        server.add_parameters(sever_parameters)
+        server_parameters = beam_line.get_server_parameter_definitions()
+        server.add_parameters(server_parameters)
+        server.add_parameter("VIRAC:beam_time", {
+            "value": 0.0,
+            "count": 1
+        })
+        server.add_parameter("VIRAC:beam_state",{
+            "type": "enum",
+            "value": 1,
+            "enums": ["OFF", "ON"]
+        })
         beam_line.reset_devices()
 
         if kwargs['debug']:
@@ -224,26 +248,105 @@ class VirtualAccelerator(Generic[ModelType, ServerType]):
         self.beam_line.update_readbacks()
         new_server_values = self.beam_line.get_parameters_for_server()
         self.server.set_parameters(new_server_values, timestamp=timestamp)
+    # self.readback() is copied from self.track(), but removes lines associated
+    # with calculating the model optics.
+    def readback(self,  timestamp: datetime = None):
+        server_parameters = self.server.get_parameters()
+        self.beam_line.update_settings_from_server(server_parameters)
+        new_measurements = self.model.get_measurements()
+
+        self.beam_line.update_readbacks()
+        new_server_values = self.beam_line.get_parameters_for_server()
+        self.server.set_parameters(new_server_values, timestamp=timestamp)
 
     def start_server(self):
-        self.server.start()
+        # Event queue for the server to pull from
+        self.q = queue.Queue()
+        self.server.start(self.q)
+        # Thread to handle event processing loop
+        self.main_server_thread = threading.Thread(target=self.run_main_thread)
+        self.main_server_thread.start()
         print(f"Server started.")
-        now = None
-
-        # Our new data acquisition routine
+        # Initialize event times
+        now = datetime.now()
+        now_ts = now.timestamp() - EPICS_EPOCH_OFFSET
+        next_beam_time = now_ts + self.update_period
+        next_update_time = now_ts + self.server_period
+        # Stop generating events once the keyboard interrupt stop event is set.
+        # This loop just generates events, beam events are at --refresh-rate,
+        # and server updates are at --update-frequency. Ideally server updates
+        # happen more frequently than beam events.
         while not_ctrlc():
-            loop_start_time = time.time()
-
-            if self.sync_time:
-                now = datetime.now()
-            self.track(timestamp=now)
-            self.server.update()
-
-            loop_time_taken = time.time() - loop_start_time
-            sleep_time = self.update_period - loop_time_taken
-            if sleep_time < 0.0:
-                print('Warning: Update took longer than refresh rate.')
-            else:
-                time.sleep(sleep_time)
+            now = datetime.now()
+            now_ts = now.timestamp()- EPICS_EPOCH_OFFSET
+            if now_ts > next_beam_time:
+                next_beam_time += self.update_period
+                if self.server.get_parameter("VIRAC:beam_state") == 0:
+                    continue
+                # Beam event generates a new pulse and updates measurements,
+                # unchanged from prior virac loop
+                beam_event = Event(
+                    type="BEAM",
+                    time=now
+                )
+                self.q.put(beam_event)
+            # rbk event processes changes to server and device values, but
+            # does not generate a new model for a beam pulse
+            if now_ts > next_update_time:
+                rbk_event = Event(
+                    type="RBK",
+                    time=now
+                )
+                self.q.put(rbk_event)
+                next_update_time += self.server_period
+            time.sleep(.01)
 
         print('Exiting. Thank you for using our virtual accelerator!')
+    def run_main_thread(self):
+        while not_ctrlc():
+            # check the queue for events
+            if self.q.empty():
+                time.sleep(0.01)
+                continue
+            else:
+                event = self.q.get(timeout=.2)
+                if event.type == "BEAM":
+                    self.handle_beam_event(event)
+                elif event.type == "RBK":
+                    self.handle_rbks_event()
+                elif event.type == "CA":
+                    self.handle_ca_events(event)
+                else:
+                    raise ValueError(f"Unknown event type: {event.type}")
+                self.server.update()
+
+    # main virac loop from prior version copied into here. Also added a pulse
+    # PV that can be read as a callback on clients, with the pulse time. and
+    # happens after the beam event is processed, avoiding issues of reading
+    # PVs associated with different beam events.
+    def handle_beam_event(self, event: Event):
+        loop_start_time = time.time()
+        now = event.time
+        if self.sync_time:
+            now = datetime.now()
+        # main virac loop.
+        self.track(timestamp=now)
+        self.server.set_parameter("VIRAC:beam_time", now.timestamp() - EPICS_EPOCH_OFFSET)
+        loop_time_taken = time.time() - loop_start_time
+        if loop_time_taken > self.update_period:
+            print("Warning: Beam event took longer than refresh rate")
+
+    # Process device updates in between beam events.
+    def handle_rbks_event(self):
+        self.readback()
+
+    # If there's any extra work do be done on a PV update, this is the place to do it.
+    def handle_ca_events(self, event: Event):
+        device_name = event.device
+        attr = event.attr
+        value = event.value
+        if device_name == "VIRAC":
+            if attr == "beam_state":
+                self.server.set_parameter("VIRAC:beam_state", value)
+            return
+        self.beam_line.devices[device_name].handle_ca_event(attr, value)

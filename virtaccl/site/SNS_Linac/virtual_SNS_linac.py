@@ -7,6 +7,7 @@ from orbit.py_linac.lattice import LinacPhaseApertureNode
 from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice, Add_rfgap_apertures_to_lattice
 from orbit.core.bunch import Bunch
 from orbit.core.linac import BaseRfGap, RfGapTTF
+from virtaccl import beam_line
 
 from virtaccl.site.SNS_Linac.orbit_model.sns_linac_lattice_factory import PyORBIT_Lattice_Factory
 from virtaccl.site.SNS_Linac.virtual_devices import (BPM, Quadrupole, Corrector, WireScanner, Quadrupole_Power_Supply,
@@ -16,10 +17,11 @@ from virtaccl.site.SNS_Linac.virtual_devices_SNS import SNS_Dummy_BCM, SNS_Cavit
 
 from virtaccl.PyORBIT_Model.pyorbit_virtual_accelerator import PyorbitVirtualAcceleratorBuilder, add_pyorbit_arguments
 from virtaccl.PyORBIT_Model.pyorbit_lattice_controller import OrbitModel
-from virtaccl.PyORBIT_Model.pyorbit_va_nodes import BPMclass, WSclass
+from virtaccl.PyORBIT_Model.pyorbit_va_nodes import BPMclass, WSclass, \
+    PhysicsClass
 
 from virtaccl.EPICS_Server.ca_server import EPICS_Server, add_epics_arguments
-from virtaccl.beam_line import BeamLine
+from virtaccl.beam_line import BeamLine, PhysicsDevice
 
 from virtaccl.virtual_accelerator import VA_Parser
 
@@ -48,12 +50,13 @@ def sns_arguments():
     va_args = va_parser.initialize_arguments()
     return va_args
 
-
 def build_sns(**kwargs):
     kwargs = sns_arguments() | kwargs
 
     debug = kwargs['debug']
     save_bunch = kwargs['save_bunch']
+    refresh_rate = kwargs['refresh_rate']
+    update_frequency = kwargs['device_frequency']
 
     config_file = Path(kwargs['config_file'])
     with open(config_file, "r") as json_file:
@@ -196,6 +199,7 @@ def build_sns(**kwargs):
                 corrector_device = Corrector(name, ele_name, power_supply=ps_device, polarity=polarity)
                 beam_line.add_device(corrector_device)
 
+
     bends = devices_dict["Bend"]
     for name, device_dict in bends.items():
         ele_name = device_dict["PyORBIT_Name"]
@@ -209,11 +213,12 @@ def build_sns(**kwargs):
                 beam_line.add_device(bend_device)
 
     wire_scanners = devices_dict["Wire_Scanner"]
-    bin_number = 50
     for name, model_name in wire_scanners.items():
         if model_name in element_list:
-            model.get_element_controller(model_name).get_element().setBinNumber(bin_number)
-            ws_device = WireScanner(name, model_name, {'bin_number': bin_number})
+            # Passing refresh rate to the WireScanner device for velocity calculations.
+            ws_device = WireScanner(name, model_name, {
+                'refresh_rate':refresh_rate,
+                'update_frequency':update_frequency})
             beam_line.add_device(ws_device)
 
     bpms = devices_dict["BPM"]
@@ -223,6 +228,7 @@ def build_sns(**kwargs):
             phase_offset = 0
             if offset_file is not None:
                 phase_offset = offset_dict[name]
+
             bpm_device = BPM(name, ele_name, phase_offset=phase_offset)
             beam_line.add_device(bpm_device)
 
@@ -235,8 +241,13 @@ def build_sns(**kwargs):
     server = EPICS_Server(process_delay=delay)
 
     sns_virac = PyorbitVirtualAcceleratorBuilder(model, beam_line, server, **kwargs)
-    return sns_virac
+    # List of PyORBIT names of devices that have physics nodes.
+    physics_devices = [
 
+    ]
+    sns_virac.add_some_physics_nodes(physics_devices)
+
+    return sns_virac
 
 def main():
     args = sns_arguments()

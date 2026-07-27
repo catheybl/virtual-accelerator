@@ -39,7 +39,7 @@ class Server:
         pass
 
     def start(self):
-        pass
+        print('Server started')
 
     def stop(self):
         pass

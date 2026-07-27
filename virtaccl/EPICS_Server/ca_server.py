@@ -1,4 +1,5 @@
 import os
+import queue
 import sys
 from threading import Thread
 from datetime import datetime
@@ -7,7 +8,7 @@ from math import floor
 from typing import Any, Dict
 
 from virtaccl.server import Server
-from virtaccl.virtual_accelerator import VA_Parser
+from virtaccl.virtual_accelerator import VA_Parser, Event
 
 
 def add_epics_arguments(va_parser: VA_Parser) -> VA_Parser:
@@ -59,7 +60,7 @@ class EPICS_Server(Server):
         if self.driver is not None:
             self.driver.updatePVs()
 
-    def start(self):
+    def start(self,q):
         try:
             from pcaspy import Driver
             from pcaspy.cas import epicsTimeStamp
@@ -68,7 +69,26 @@ class EPICS_Server(Server):
             class TDriver(Driver):
                 def __init__(self):
                     Driver.__init__(self)
-
+                # Override write method to push CA events to the queue
+                def write(self, reason, value, timestamp=None):
+                    super().write(reason, value)
+                    try:
+                        prefix, name, attr = reason.split(":")
+                        device = f"{prefix}:{name}"
+                    except ValueError:
+                        try:
+                            name, attr = reason.split(":")
+                            device = name
+                        except ValueError:
+                            raise Exception("Invalid PV: ", reason)
+                    CA_event = Event(
+                        type="CA",
+                        device=device,
+                        attr=attr,
+                        value=value,
+                        time=datetime.now()
+                    )
+                    q.put(CA_event)
                 def setParam(self, reason, value, timestamp=None):
                     super().setParam(reason, value)
                     if timestamp is not None:
@@ -95,7 +115,7 @@ class EPICS_Server(Server):
             self.start_flag = True
         except Exception as e:
             print(f'Warning! CA communication is not available because of exception: {e}.')
-            print(f'Check EPICS (pcaspy)  installation.')
+            print(f'Check EPICS (pcaspy) installation.')
 
     def stop(self):
         # it's unclear how to gracefully stop the server

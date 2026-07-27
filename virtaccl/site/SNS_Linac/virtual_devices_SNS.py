@@ -77,7 +77,7 @@ class SNS_Dummy_BCM(Device):
                         freq = beta * SNS_Dummy_BCM.c_light / SNS_Dummy_BCM.ring_length
                         self.update_measurement(reason, freq)
 
-
+# Not needed right now, but could be useful if there's SNS specific things needed on wire scanner
 class SNS_WireScanner(WireScanner):
     x_amp_pv = 'Hor_Amp_gs'
     y_amp_pv = 'Ver_Amp_gs'
@@ -106,7 +106,7 @@ class SNS_WireScanner(WireScanner):
         self.register_setting(SNS_WireScanner.stroke_pv, default=0)
         self.register_setting(SNS_WireScanner.oor_pv, default=0)
 
-
+# Needed by Andrei's XAL Tools, likely the SCL wizard
 class SNS_Dummy_ICS(Device):
     # EPICS PV names
     beam_on_pv = 'Gate_BeamOn:RR'
@@ -135,7 +135,7 @@ class SNS_Dummy_ICS(Device):
     def get_model_optics(self) -> Dict[str, Dict[str, Any]]:
         return {}
 
-
+# Can add to dump device info at specific points
 class SNS_Bunch_Dumper(Device):
     # EPICS PV names
     file_name_pv = 'bunch_file'

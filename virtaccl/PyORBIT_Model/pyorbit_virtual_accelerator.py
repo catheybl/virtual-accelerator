@@ -2,6 +2,7 @@ from virtaccl.PyORBIT_Model.pyorbit_lattice_controller import OrbitModel
 from virtaccl.beam_line import BeamLine, PhysicsDevice
 from virtaccl.server import Server
 from virtaccl.virtual_accelerator import VA_Parser, VirtualAcceleratorBuilder
+from virtaccl.PyORBIT_Model.pyorbit_va_nodes import PhysicsClass
 
 
 def add_pyorbit_arguments(va_parser: VA_Parser) -> VA_Parser:
@@ -40,9 +41,24 @@ class PyorbitVirtualAcceleratorBuilder(VirtualAcceleratorBuilder[OrbitModel, Ser
         super().__init__(model, beam_line, server, **kwargs)
 
         if kwargs['physics_nodes']:
-            self.add_physics_nodes()
+            self.add_all_physics_nodes()
 
-    def add_physics_nodes(self):
+    # If the user wants to add physics nodes to specific devices this will
+    # populate the model with them.
+    def add_some_physics_nodes(self,physics_devices: list[str] = None):
+        if physics_devices is None:
+            return
+        else:
+            for device_name in physics_devices:
+                device = self.beam_line.get_device(device_name)
+                physics_name = f"{device.name}:Physics"
+                physics_child = PhysicsClass(physics_name)
+                self.model.add_child_node(device_name, physics_child)
+                phys_device = PhysicsDevice(physics_name)
+                self.beam_line.add_device(phys_device)
+            self.model.force_track()
+
+    def add_all_physics_nodes(self):
         physics_elements = self.model.add_physics_nodes()
         for physics_name in physics_elements:
             phys_device = PhysicsDevice(physics_name)
