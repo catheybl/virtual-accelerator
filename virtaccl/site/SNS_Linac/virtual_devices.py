@@ -160,8 +160,8 @@ class Cavity(Device):
     amp_pv = 'CtlAmpSet'  # [arb. units]
     amp_goal_pv = 'cavAmpGoal'  # [arb. units]
     blank_pv = 'BlnkBeam'  # [0 or 1]
-    phase_rbk_pv = "cavPhaseAvg"
-    amp_rbk_pv = "cavAmpAvg"
+    phase_rbk_pv = 'cavPhaseAvg'
+    amp_rbk_pv = 'cavAmpAvg'
 
     # PyORBIT parameter keys
     phase_key = 'phase'  # [radians]
@@ -238,6 +238,10 @@ class BPM(Device):
     amp_pv = 'amplitudeAvg'  # [mA]
     amp_noise = 1e-6  # mA
     oeda_pv = 'OEDA'  # Off Energy Delay Adjustment. Should be 0 during production.
+    phase_array_pv = 'beamPAsec' # [degrees] 60-value array
+    current_array_pv = 'beamIAsec' # [A] 60-value array
+    ver_pos_arr_pv = 'vposAsec' # [m] 60-value array
+    hor_pos_arr_pv = 'hposAsec' # [m] 60-value array
 
     # PyORBIT parameter keys
     x_key = 'x_avg'  # [m]
@@ -245,12 +249,15 @@ class BPM(Device):
     phase_key = 'phi_avg'  # [radians]
     amp_key = 'amp_avg'  # [A]
 
-    def __init__(self, name: str, model_name: str = None, phase_offset=0):
+    def __init__(self, name: str, model_name: str = None, phase_offset=0, bin_number=60,rep_rate = 1):
         if model_name is None:
             self.model_name = name
         else:
             self.model_name = model_name
         super().__init__(name, self.model_name)
+
+        self.bin_number = bin_number
+        self.rep_rate = rep_rate
 
         # Changes the units from meters to millimeters for associated PVs.
         milli_units = LinearTInv(scaler=1e3)
@@ -269,7 +276,17 @@ class BPM(Device):
         self.register_measurement(BPM.phase_pv, noise=phase_noise, transform=offset_transform)
         self.register_measurement(BPM.amp_pv, noise=amp_noise, transform=milli_units)
 
+        self.register_measurement(BPM.phase_array_pv,transform=offset_transform,definition={'count': self.bin_number})
+        self.register_measurement(BPM.current_array_pv,transform=milli_units,definition={'count': self.bin_number})
+        self.register_measurement(BPM.ver_pos_arr_pv,transform=milli_units,definition={'count': self.bin_number})
+        self.register_measurement(BPM.hor_pos_arr_pv,transform=milli_units,definition={'count': self.bin_number})
+
         self.register_setting(BPM.oeda_pv, default=0)
+
+        self.phase_arr = np.zeros(self.bin_number)
+        self.amp_arr = np.zeros(self.bin_number)
+        self.x_pos_arr = np.zeros(self.bin_number)
+        self.y_pos_arr = np.zeros(self.bin_number)
 
     # Updates the measurement values on the server. Needs the model key associated with its value and the new value.
     # This is where the measurement PV name is associated with its model key.
@@ -290,6 +307,19 @@ class BPM(Device):
         self.update_measurement(BPM.x_pv, x_avg)
         self.update_measurement(BPM.y_pv, y_avg)
         self.update_measurement(BPM.phase_pv, phase_avg)
+        # Fill arrays with values up to the rep rate
+
+        for i in range(int(self.rep_rate)):
+            if i == self.bin_number:
+                break
+            self.phase_arr[i] = phase_avg+np.random.rand()*self.phase_noise
+            self.amp_arr[i] = amp+np.random.rand()*self.amp_noise
+            self.x_pos_arr[i] = x_avg+np.random.rand()*self.xy_noise
+            self.y_pos_arr[i] = y_avg+np.random.rand()*self.xy_noise
+        self.update_readback(BPM.phase_array_pv,self.phase_arr)
+        self.update_readback(BPM.current_array_pv,self.amp_arr)
+        self.update_readback(BPM.ver_pos_arr_pv,self.y_pos_arr)
+        self.update_readback(BPM.hor_pos_arr_pv,self.x_pos_arr)
 
 
 class WireScanner(Device):

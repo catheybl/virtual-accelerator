@@ -231,11 +231,14 @@ def build_sns(**kwargs):
     for name, device_dict in bpms.items():
         ele_name = device_dict["PyORBIT_Name"]
         if ele_name in element_list:
+            bpm_dict = {}
             phase_offset = 0
             if bpm_offsets is not None and name in bpm_offsets:
                 phase_offset = bpm_offsets[name]
-
-            bpm_device = BPM(name, ele_name, phase_offset=phase_offset)
+            bpm_dict['phase_offset'] = phase_offset
+            bpm_dict['bin_number'] = 60
+            bpm_dict['rep_rate'] = refresh_rate
+            bpm_device = BPM(name, ele_name, **bpm_dict)
             beam_line.add_device(bpm_device)
 
     dummy_device = SNS_Dummy_BCM("Ring_Diag:BCM_D09", 'HEBT_Diag:BPM11')
