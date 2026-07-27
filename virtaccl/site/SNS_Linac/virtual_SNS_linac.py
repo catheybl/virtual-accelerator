@@ -119,8 +119,6 @@ def build_sns(**kwargs):
     element_list = model.get_element_list()
 
     beam_line = BeamLine()
-    cav_offsets = None
-    bpm_offsets = None
     rf_sync_file = None
     if kwargs['phase_offset'] is not None:
         loc = Path(__file__).parent
@@ -140,8 +138,8 @@ def build_sns(**kwargs):
             initial_settings['amp'] = 1
             cavity_dict['init_amp'] = initial_settings['amp']
             cavity_dict['init_phase'] = initial_settings['phase']
-            if rf_sync_file is not None and ele_name in cav_sync_dict:
-                cavity_dict = cav_sync_dict[ele_name]
+            if rf_sync_file is not None and name in cav_sync_dict:
+                cavity_dict = cav_sync_dict[name]
             rf_device = SNS_Cavity(name, ele_name, **cavity_dict)
             beam_line.add_device(rf_device)
 
@@ -233,16 +231,20 @@ def build_sns(**kwargs):
         if ele_name in element_list:
             bpm_dict = {}
             phase_offset = 0
-            if bpm_offsets is not None and name in bpm_offsets:
-                phase_offset = bpm_offsets[name]
+            if rf_sync_file is not None and name in bpm_sync_dict:
+                phase_offset = bpm_sync_dict[name]
             bpm_dict['phase_offset'] = phase_offset
             bpm_dict['bin_number'] = 60
             bpm_dict['rep_rate'] = refresh_rate
             bpm_device = BPM(name, ele_name, **bpm_dict)
             beam_line.add_device(bpm_device)
 
-    dummy_device = SNS_Dummy_BCM("Ring_Diag:BCM_D09", 'HEBT_Diag:BPM11')
-    beam_line.add_device(dummy_device)
+    bcm_name = "Ring_Diag:BCM_D09"
+    bcm_node = PhysicsClass(bcm_name)
+    model.add_child_node("HEBT_Diag:BPM11", bcm_node)
+    bcm_device = SNS_Dummy_BCM(bcm_name)
+    beam_line.add_device(bcm_device)
+
     dummy_device = SNS_Dummy_ICS("ICS_Tim")
     beam_line.add_device(dummy_device)
 
