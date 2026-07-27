@@ -276,10 +276,10 @@ class BPM(Device):
         self.register_measurement(BPM.phase_pv, noise=phase_noise, transform=offset_transform)
         self.register_measurement(BPM.amp_pv, noise=amp_noise, transform=milli_units)
 
-        self.register_measurement(BPM.phase_array_pv,transform=offset_transform,definition={'count': self.bin_number})
-        self.register_measurement(BPM.current_array_pv,transform=milli_units,definition={'count': self.bin_number})
-        self.register_measurement(BPM.ver_pos_arr_pv,transform=milli_units,definition={'count': self.bin_number})
-        self.register_measurement(BPM.hor_pos_arr_pv,transform=milli_units,definition={'count': self.bin_number})
+        self.register_measurement(BPM.phase_array_pv,definition={'count': self.bin_number})
+        self.register_measurement(BPM.current_array_pv,definition={'count': self.bin_number})
+        self.register_measurement(BPM.ver_pos_arr_pv,definition={'count': self.bin_number})
+        self.register_measurement(BPM.hor_pos_arr_pv,definition={'count': self.bin_number})
 
         self.register_setting(BPM.oeda_pv, default=0)
 
@@ -312,14 +312,15 @@ class BPM(Device):
         for i in range(int(self.rep_rate)):
             if i == self.bin_number:
                 break
-            self.phase_arr[i] = phase_avg+np.random.rand()*self.phase_noise
-            self.amp_arr[i] = amp+np.random.rand()*self.amp_noise
-            self.x_pos_arr[i] = x_avg+np.random.rand()*self.xy_noise
-            self.y_pos_arr[i] = y_avg+np.random.rand()*self.xy_noise
-        self.update_readback(BPM.phase_array_pv,self.phase_arr)
-        self.update_readback(BPM.current_array_pv,self.amp_arr)
-        self.update_readback(BPM.ver_pos_arr_pv,self.y_pos_arr)
-        self.update_readback(BPM.hor_pos_arr_pv,self.x_pos_arr)
+            self.phase_arr[i] = self.get_parameter(BPM.phase_pv).get_value_for_server()
+            self.amp_arr[i] = self.get_parameter(BPM.amp_pv).get_value_for_server()
+            self.x_pos_arr[i] = self.get_parameter(BPM.x_pv).get_value_for_server()
+            self.y_pos_arr[i] = self.get_parameter(BPM.y_pv).get_value_for_server()
+
+        self.update_measurement(BPM.phase_array_pv,self.phase_arr)
+        self.update_measurement(BPM.current_array_pv,self.amp_arr)
+        self.update_measurement(BPM.ver_pos_arr_pv,self.y_pos_arr)
+        self.update_measurement(BPM.hor_pos_arr_pv,self.x_pos_arr)
 
 
 class WireScanner(Device):
