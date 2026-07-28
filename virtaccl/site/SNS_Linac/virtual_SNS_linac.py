@@ -133,9 +133,7 @@ def build_sns(**kwargs):
         ele_name = device_dict["PyORBIT_Name"]
         if ele_name in element_list:
             cavity_dict = {}
-            # amplitude = device_dict["Design_Amplitude"]
             initial_settings = model.get_element_parameters(ele_name)
-            initial_settings['amp'] = 1
             cavity_dict['init_amp'] = initial_settings['amp']
             cavity_dict['init_phase'] = initial_settings['phase']
             if rf_sync_file is not None and name in cav_sync_dict:
