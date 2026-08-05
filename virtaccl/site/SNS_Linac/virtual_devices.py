@@ -660,7 +660,7 @@ class WireScanner(Device):
         for wire in self.wires:
             position = self.last_wire_pos
             config = wire.config[wire.axis]
-            hist = ws_params[getattr(self, f"{config["key_prefix"]}hist_key")]
+            hist = ws_params[getattr(self, config["key_prefix"] + "hist_key")]
             axis = hist[:, 0]
             profile = hist[:, 1]
             wire_pos = wire.position
