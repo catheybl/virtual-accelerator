@@ -390,6 +390,7 @@ class WireScanner(Device):
     refresh_rate_pv = 'BeamRepRate' # [Hz]
     # Command PV is what client uses to request wire scanner to do things
     command_pv = 'Command' # int
+    motion_status_pv = 'MotionStat'
     commands_dict = {
         "Move": 7,
         "Scan": 21,
@@ -524,6 +525,7 @@ class WireScanner(Device):
         self.register_setting(WireScanner.stop_2_pv, default=self.stop_2, transform=self.milli_units)
         self.register_setting(WireScanner.stop_3_pv, default=self.stop_3, transform=self.milli_units)
         self.register_setting(WireScanner.command_pv, default=0)
+        self.register_readback(WireScanner.motion_status_pv,self.moving)
         self.register_readback(WireScanner.position_readback_pv, WireScanner.position_pv, transform=self.milli_units,
                                noise=pos_noise)
         self.register_parameter(WireScanner.refresh_rate_pv,default=self.refresh_rate)
@@ -724,9 +726,12 @@ class WireScanner(Device):
         self.scan_init = False
         self.scanning = False
         self.speed = self.max_speed
+        #TODO: get correct setting for motion status pv
+        self.server_setting_override(self.motion_status_pv, 5)
     # Performing a scan
     def do_scan(self):
         # Don't interrupt an active scan
+        self.server_setting_override(self.motion_status_pv, 5)
         if self.scanning:
             return
         # Figure out which endpoint is closer and move to it
@@ -764,6 +769,7 @@ class WireScanner(Device):
         self.moving = False
         self.scanning = False
         self.scan_init = False
+        self.server_setting_override(self.motion_status_pv, 0)
         self.speed = 0
 
 
