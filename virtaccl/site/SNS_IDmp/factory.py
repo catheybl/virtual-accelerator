@@ -115,6 +115,15 @@ def make_bunch(
     xp_off: float = 0.0,
     y_off: float = 0.0,
     yp_off: float = 0.0,
+    alpha_x: float = 0.3777,
+    alpha_y: float = -0.7225,
+    alpha_z: float = +17.0460,
+    beta_x: float = 7.5421,
+    beta_y: float = 9.1459,
+    beta_z: float = 179.6212,
+    eps_x: float = 0.4249,
+    eps_y: float = 0.3691,
+    eps_z: float = 1.1498,
     dist: str = "gauss",
     debug: bool = False,
 ) -> Bunch:
@@ -128,11 +137,9 @@ def make_bunch(
     frequency = 402.5e6
 
     # Emittances are normalized --- transverse by beta * gamma and long. by beta * gamma^3.
-    alpha_x, beta_x, emitt_x = (0.3777, 7.5421, 0.4249)
-    alpha_y, beta_y, emitt_y = (-0.7225, 9.1459, 0.3691)
-    alpha_z, beta_z, emitt_z = (-17.0460, 179.6212, 1.1498)
-
-    alpha_z = -alpha_z
+    alpha_x, beta_x, emitt_x = (alpha_x, beta_x, eps_x)
+    alpha_y, beta_y, emitt_y = (alpha_y, beta_y, eps_y)
+    alpha_z, beta_z, emitt_z = (alpha_z, beta_z, eps_z)
 
     # Unnormalize emittances [m * rad].
     emitt_x = 1.0e-6 * emitt_x / (gamma * beta)
@@ -150,18 +157,16 @@ def make_bunch(
     bunch_gen = BunchGenerator(twiss_x, twiss_y, twiss_z)
     bunch_gen.setKinEnergy(e_kin_ini)  # [GeV]
     bunch_gen.setBeamCurrent(38.0)  # [mA]
-    bunch.charge(1.0)
 
+    bunch = None
     if dist == "gauss":
-        bunch = bunch_gen.getBunch(
-            nParticles=particle_number, distributorClass=GaussDist3D
-        )
+        bunch = bunch_gen.getBunch(nParticles=nparts, distributorClass=GaussDist3D)
     elif dist == "waterbag":
-        bunch = bunch_gen.getBunch(
-            nParticles=particle_number, distributorClass=WaterBagDist3D
-        )
+        bunch = bunch_gen.getBunch(nParticles=nparts, distributorClass=WaterBagDist3D)
     else:
         raise ValueError(f"Invalid distribution '{dist}'")
+
+    bunch.charge(1.0)
 
     for i in range(nparts):
         x = bunch.x(i)

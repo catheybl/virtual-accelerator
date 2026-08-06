@@ -24,8 +24,8 @@ from virtaccl.EPICS_Server.ca_server import EPICS_Server
 from virtaccl.EPICS_Server.ca_server import add_epics_arguments
 from virtaccl.virtual_accelerator import VA_Parser
 
-from .maker import get_lattice
-from .maker import get_bunch
+from .factory import make_lattice
+from .factory import make_bunch
 
 
 def parse_args():
@@ -57,12 +57,17 @@ def parse_args():
         "--phase_offset", default=None, type=str, help="Pathname of phase offset file."
     )
 
+    va_parser.add_argument("--x-off", type=float, default=0.002)
+    va_parser.add_argument("--y-off", type=float, default=0.0)
+    va_parser.add_argument("--xp-off", type=float, default=0.0003)
+    va_parser.add_argument("--yp-off", type=float, default=0.0)
+
     va_args = va_parser.initialize_arguments()
     return va_args
 
 
-def build(**kwargs):
-    kwargs = idmp_arguments() | kwargs
+def make_virac(**kwargs):
+    kwargs = parse_args() | kwargs
 
     debug = kwargs["debug"]
 
@@ -72,8 +77,15 @@ def build(**kwargs):
 
     part_num = kwargs["particle_number"]
 
-    latttice = get_lattice(debug=debug)
-    bunch = get_bunch(part_num, x_off=0.002, xp_off=0.0003, debug=debug)
+    lattice = make_lattice(debug=debug)
+    bunch = make_bunch(
+        nparts=kwargs["particle_number"],
+        x_off=kwargs["x_off"],
+        y_off=kwargs["y_off"],
+        xp_off=kwargs["xp_off"],
+        yp_off=kwargs["yp_off"],
+        debug=debug,
+    )
 
     model = OrbitModel(input_bunch=bunch, debug=debug)
     model.define_custom_node(BPMclass.node_type, BPMclass.parameter_list, diagnostic=True)
@@ -85,10 +97,10 @@ def build(**kwargs):
 
     beam_line = BeamLine()
 
-    refresh_rate = kwargs['refresh_rate']
-    update_frequency = kwargs['device_frequency']
+    refresh_rate = kwargs["refresh_rate"]
+    update_frequency = kwargs["device_frequency"]
 
-    offset_file = kwargs['phase_offset']
+    offset_file = kwargs["phase_offset"]
     if offset_file is not None:
         with open(offset_file, "r") as json_file:
             offset_dict = json.load(json_file)
@@ -128,10 +140,14 @@ def build(**kwargs):
     wire_scanners = devices_dict["Wire_Scanner"]
     for name, model_name in wire_scanners.items():
         if model_name in element_list:
-            # Passing refresh rate to the WireScanner device for velocity calculations
-            ws_device = WireScanner(name, model_name, {
-                'refresh_rate': refresh_rate,
-                'update_frequency': update_frequency})
+            ws_device = WireScanner(
+                name,
+                model_name,
+                initial_dict={
+                    "refresh_rate": refresh_rate,
+                    "update_frequency": update_frequency
+                },
+            )
             beam_line.add_device(ws_device)
 
     bpms = devices_dict["BPM"]
@@ -157,13 +173,12 @@ def build(**kwargs):
     delay = kwargs["ca_proc"]
     server = EPICS_Server(process_delay=delay)
 
-    idmp_virac = PyorbitVirtualAcceleratorBuilder(model, beam_line, server, **kwargs)
-    return idmp_virac
+    return PyorbitVirtualAcceleratorBuilder(model, beam_line, server, **kwargs)
 
 
 def main():
     args = parse_args()
-    va = build(**args).build()
+    va = make_virac(**args).build()
     va.start_server()
 
 
