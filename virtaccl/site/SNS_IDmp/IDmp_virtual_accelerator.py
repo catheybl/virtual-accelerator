@@ -65,6 +65,9 @@ def build_idmp(**kwargs):
 
     beam_line = BeamLine()
 
+    refresh_rate = kwargs['refresh_rate']
+    update_frequency = kwargs['device_frequency']
+
     offset_file = kwargs['phase_offset']
     if offset_file is not None:
         with open(offset_file, "r") as json_file:
@@ -101,7 +104,10 @@ def build_idmp(**kwargs):
     wire_scanners = devices_dict["Wire_Scanner"]
     for name, model_name in wire_scanners.items():
         if model_name in element_list:
-            ws_device = WireScanner(name, model_name)
+            # Passing refresh rate to the WireScanner device for velocity calculations.
+            ws_device = WireScanner(name, model_name, {
+                'refresh_rate': refresh_rate,
+                'update_frequency': update_frequency})
             beam_line.add_device(ws_device)
 
     bpms = devices_dict["BPM"]
