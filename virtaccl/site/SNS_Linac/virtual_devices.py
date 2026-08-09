@@ -435,22 +435,22 @@ class WireScanner(Device):
     initial_defaults = {
         "x_offset": -0.015, # [m]
         "y_offset": 0.015,# [m]
-        "x_start": .005, # [m]
-        "x_stop": .025, # [m]
-        "y_start": -.025, # [m]
-        "y_stop": -.005, # [m]
+        "x_start": 0.005, # [m]
+        "x_stop": .040, # [m]
+        "y_start": -.040, # [m]
+        "y_stop": 0.005, # [m]
         "d_start": -.005, # [m]
         "d_stop": .005, # [m]
         "refresh_rate": 100,
-        "position": -0.03,# [m]
+        "position": -0.035,# [m]
         "wire_count": 2,
         "bin_number": 50,
         "d_dx": 0.001, # [m]
         "x_dx": 0.001, # [m]
         "y_dx": 0.001, # [m]
-        "stop_1": -0.030, # [m]
+        "stop_1": -0.045, # [m]
         "stop_2": 0.000, # [m]
-        "stop_3": 0.030 # [m]
+        "stop_3": 0.045 # [m]
     }
 
     def __init__(self, name: str, model_name: str = None, initial_dict: Dict[str, Any] = None):
