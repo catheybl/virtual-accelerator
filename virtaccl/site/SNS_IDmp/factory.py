@@ -27,6 +27,12 @@ def make_lattice(debug: bool = False) -> LinacAccLattice:
     bpm_frequency = 402.5e6
 
     nodes = []
+    WS00 = WSclass("WS00")
+    nodes.append(WS00)
+
+    D0 = Drift("Drift0")
+    D0.setLength(6.48 - 5.31)
+    nodes.append(D0)
 
     BPM00 = BPMclass("BPM00", frequency=bpm_frequency)
     nodes.append(BPM00)

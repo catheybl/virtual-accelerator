@@ -34,6 +34,7 @@
         }
     },
     "Wire_Scanner": {
+        "IDmp_Diag:WS00": "WS00",
         "IDmp_Diag:WS01": "WS01"
     },
     "BPM": {
