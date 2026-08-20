@@ -401,13 +401,13 @@ class WireScanner(Device):
     # PyORBIT parameter keys
     x_hist_key = 'x_histogram'  # [m, arb. units]
     y_hist_key = 'y_histogram'  # [m, arb. units]
-    # d_hist_key = 'd_histogram'  # [m, arb. units]
+    d_hist_key = 'd_histogram'  # [m, arb. units]
     x_avg_key = 'x_avg'  # [m]
     y_avg_key = 'y_avg'  # [m]
-    # d_avg_key = 'd_avg'  # [m]
+    d_avg_key = 'd_avg'  # [m]
     x_sigma_key = 'x_sigma'  # [m]
     y_sigma_key = 'y_sigma'  # [m]
-    # d_sigma_key = 'd_sigma'  # [m]
+    d_sigma_key = 'd_sigma'  # [m]
     bin_number_key = 'bin_number'  # [number]
 
     # Device keys
@@ -438,12 +438,12 @@ class WireScanner(Device):
         "x_start": 0.005, # [m]
         "x_stop": .040, # [m]
         "y_start": -.040, # [m]
-        "y_stop": 0.005, # [m]
-        "d_start": -.005, # [m]
-        "d_stop": .005, # [m]
+        "y_stop": -0.005, # [m]
+        "d_start": -.015, # [m]
+        "d_stop": .015, # [m]
         "refresh_rate": 100,
         "position": -0.035,# [m]
-        "wire_count": 2,
+        "wire_count": 3,
         "bin_number": 50,
         "d_dx": 0.001, # [m]
         "x_dx": 0.001, # [m]
@@ -491,24 +491,28 @@ class WireScanner(Device):
         # Registers the device's PVs with the server. Diagonal wire not supported yet.
         self.register_measurement(WireScanner.x_charge_pv, noise=xy_noise)
         self.register_measurement(WireScanner.y_charge_pv, noise=xy_noise)
-        # self.register_measurement(WireScanner.d_charge_pv, noise=xy_noise)
+        self.register_measurement(WireScanner.d_charge_pv, noise=xy_noise)
         self.register_measurement(WireScanner.x_avg_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.y_avg_pv, noise=xy_noise, transform=self.milli_units)
-        # self.register_measurement(WireScanner.d_avg_pv, noise=xy_noise, transform=self.milli_units)
+        self.register_measurement(WireScanner.d_avg_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.x_sigma_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.y_sigma_pv, noise=xy_noise, transform=self.milli_units)
-        # self.register_measurement(WireScanner.d_sigma_pv, noise=xy_noise, transform=self.milli_units)
+        self.register_measurement(WireScanner.d_sigma_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.x_profile_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.x_axis_pv, transform=self.milli_units, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_profile_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_axis_pv, transform=self.milli_units, definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_profile_pv,
+                                  definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_axis_pv,
+                                  transform=self.milli_units,
+                                  definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.x_trace_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_trace_pv, definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_trace_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.trace_time_pv, definition={'count': self.trace_bin_number})
         times = np.linspace(0, self.trace_time, self.trace_bin_number)
         self.update_measurement(WireScanner.trace_time_pv, times)
-        # self.register_measurement(WireScanner.d_profile_pv, definition={'count': bin_number})
-        # self.register_measurement(WireScanner.d_axis_pv, transform=self.milli_units, definition={'count': bin_number})
         # PVs for client I/O
         self.register_readback(WireScanner.speed_pv, transform=self.milli_units)
         self.register_setting(WireScanner.d_dx_pv, default=self.d_dx, transform=self.milli_units)
