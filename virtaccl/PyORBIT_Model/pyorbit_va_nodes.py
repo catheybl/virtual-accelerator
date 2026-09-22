@@ -146,12 +146,12 @@ class BPMclass(BaseLinacNode):
 # Class for wire scanners. This class simply returns histograms of the vertical and horizontal positions.
 class WSclass(BaseLinacNode):
     node_type = "WireScanner"
-    parameter_list = ['x_histogram', 'y_histogram', 'x_avg', 'y_avg', 'x_sigma', 'y_sigma', 'bin_number']
+    parameter_list = ['x_histogram', 'y_histogram', 'd_histogram', 'x_avg', 'y_avg', 'd_avg', 'x_sigma', 'y_sigma', 'd_sigma', 'bin_number']
 
     def __init__(self, node_name: str, bin_number: int = 50):
         default_histogram = np.column_stack((np.linspace(-10, 10, bin_number), np.zeros(bin_number)))
-        parameters = {'x_histogram': default_histogram, 'y_histogram': default_histogram,
-                      'x_avg': 0.0, 'y_avg': 0.0, 'x_sigma': 0.0, 'y_sigma': 0.0, 'bin_number': bin_number}
+        parameters = {'x_histogram': default_histogram, 'y_histogram': default_histogram, 'd_histogram': default_histogram,
+                      'x_avg': 0.0, 'y_avg': 0.0, 'd_avg': 0.0, 'x_sigma': 0.0, 'y_sigma': 0.0, 'd_sigma': 0.0, 'bin_number': bin_number}
         BaseLinacNode.__init__(self, node_name)
         for key, value in parameters.items():
             self.addParam(key, value)
@@ -165,6 +165,7 @@ class WSclass(BaseLinacNode):
         part_num = bunch.getSizeGlobal()
         x_array = np.zeros(part_num)
         y_array = np.zeros(part_num)
+        d_array = np.zeros(part_num)
         bin_number = self.getParam('bin_number')
         if part_num > 0:
             sync_part = bunch.getSyncParticle()
@@ -172,12 +173,16 @@ class WSclass(BaseLinacNode):
             sync_energy = sync_part.kinEnergy()
             x_avg = 0
             y_avg = 0
+            d_avg = 0
             for n in range(part_num):
                 x, y, z = bunch.x(n), bunch.y(n), bunch.z(n)
+                d = (x+y)/np.sqrt(2)
                 x_array[n] = x
                 y_array[n] = y
+                d_array[n] = d
                 x_avg += x
                 y_avg += y
+                d_avg += d
 
             x_limits = np.array([np.min(x_array), np.max(x_array)]) * 1.1
             x_bin_edges = np.linspace(x_limits[0], x_limits[1], bin_number + 1)
@@ -191,27 +196,41 @@ class WSclass(BaseLinacNode):
             y_positions = (y_bins[:-1] + y_bins[1:]) / 2
             y_out = np.column_stack((y_positions, y_hist))
 
+            d_limits = np.array([np.min(d_array), np.max(d_array)]) * 1.1
+            d_bin_edges = np.linspace(d_limits[0], d_limits[1], bin_number + 1)
+            d_hist, d_bins = np.histogram(d_array, bins=d_bin_edges)
+            d_positions = (d_bins[:-1] + d_bins[1:])
+            d_out = np.column_stack((d_positions, d_hist))
+
             x_avg /= part_num
             y_avg /= part_num
+            d_avg /= part_num
 
             x_sigma = np.std(x_array, ddof=0)
             y_sigma = np.std(y_array, ddof=0)
+            d_sigma = np.std(d_array, ddof=0)
 
             self.setParam('x_histogram', x_out)
             self.setParam('y_histogram', y_out)
+            self.setParam('d_histogram', d_out)
             self.setParam('x_avg', x_avg)
             self.setParam('y_avg', y_avg)
+            self.setParam('d_avg', d_avg)
             self.setParam('x_sigma', x_sigma)
             self.setParam('y_sigma', y_sigma)
+            self.setParam('d_sigma', d_sigma)
 
         else:
             default_histogram = np.column_stack((np.linspace(-10, 10, bin_number), np.zeros(bin_number)))
             self.setParam('x_histogram', default_histogram)
             self.setParam('y_histogram', default_histogram)
+            self.setParam('d_histogram', default_histogram)
             self.setParam('x_avg', 0)
             self.setParam('y_avg', 0)
+            self.setParam('d_avg', 0)
             self.setParam('x_sigma', 0)
             self.setParam('y_sigma', 0)
+            self.setParam('d_sigma', 0)
 
     def getXHistogram(self):
         return self.getParam('x_histogram')
@@ -219,17 +238,26 @@ class WSclass(BaseLinacNode):
     def getYHistogram(self):
         return self.getParam('y_histogram')
 
+    def getDHistogram(self):
+        return self.getParam('d_histogram')
+
     def getXAvg(self):
         return self.getParam('x_avg')
 
     def getYAvg(self):
         return self.getParam('y_avg')
 
+    def getDAvg(self):
+        return self.getParam('d_avg')
+
     def getXSigma(self):
         return self.getParam('x_sigma')
 
     def getYSigma(self):
         return self.getParam('y_sigma')
+
+    def getDSigma(self):
+        return self.getParam('d_sigma')
 
     def getBinNumber(self):
         return self.getParam('bin_number')

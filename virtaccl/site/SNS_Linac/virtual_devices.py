@@ -390,6 +390,7 @@ class WireScanner(Device):
     refresh_rate_pv = 'BeamRepRate' # [Hz]
     # Command PV is what client uses to request wire scanner to do things
     command_pv = 'Command' # int
+    motion_status_pv = 'MotionStat'
     commands_dict = {
         "Move": 7,
         "Scan": 21,
@@ -400,13 +401,13 @@ class WireScanner(Device):
     # PyORBIT parameter keys
     x_hist_key = 'x_histogram'  # [m, arb. units]
     y_hist_key = 'y_histogram'  # [m, arb. units]
-    # d_hist_key = 'd_histogram'  # [m, arb. units]
+    d_hist_key = 'd_histogram'  # [m, arb. units]
     x_avg_key = 'x_avg'  # [m]
     y_avg_key = 'y_avg'  # [m]
-    # d_avg_key = 'd_avg'  # [m]
+    d_avg_key = 'd_avg'  # [m]
     x_sigma_key = 'x_sigma'  # [m]
     y_sigma_key = 'y_sigma'  # [m]
-    # d_sigma_key = 'd_sigma'  # [m]
+    d_sigma_key = 'd_sigma'  # [m]
     bin_number_key = 'bin_number'  # [number]
 
     # Device keys
@@ -434,22 +435,22 @@ class WireScanner(Device):
     initial_defaults = {
         "x_offset": -0.015, # [m]
         "y_offset": 0.015,# [m]
-        "x_start": .005, # [m]
-        "x_stop": .025, # [m]
-        "y_start": -.025, # [m]
-        "y_stop": -.005, # [m]
-        "d_start": -.005, # [m]
-        "d_stop": .005, # [m]
+        "x_start": 0.005, # [m]
+        "x_stop": .040, # [m]
+        "y_start": -.040, # [m]
+        "y_stop": -0.005, # [m]
+        "d_start": -.015, # [m]
+        "d_stop": .015, # [m]
         "refresh_rate": 100,
-        "position": -0.03,# [m]
-        "wire_count": 2,
+        "position": -0.035,# [m]
+        "wire_count": 3,
         "bin_number": 50,
         "d_dx": 0.001, # [m]
         "x_dx": 0.001, # [m]
         "y_dx": 0.001, # [m]
-        "stop_1": -0.030, # [m]
+        "stop_1": -0.045, # [m]
         "stop_2": 0.000, # [m]
-        "stop_3": 0.030 # [m]
+        "stop_3": 0.045 # [m]
     }
 
     def __init__(self, name: str, model_name: str = None, initial_dict: Dict[str, Any] = None):
@@ -490,24 +491,28 @@ class WireScanner(Device):
         # Registers the device's PVs with the server. Diagonal wire not supported yet.
         self.register_measurement(WireScanner.x_charge_pv, noise=xy_noise)
         self.register_measurement(WireScanner.y_charge_pv, noise=xy_noise)
-        # self.register_measurement(WireScanner.d_charge_pv, noise=xy_noise)
+        self.register_measurement(WireScanner.d_charge_pv, noise=xy_noise)
         self.register_measurement(WireScanner.x_avg_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.y_avg_pv, noise=xy_noise, transform=self.milli_units)
-        # self.register_measurement(WireScanner.d_avg_pv, noise=xy_noise, transform=self.milli_units)
+        self.register_measurement(WireScanner.d_avg_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.x_sigma_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.y_sigma_pv, noise=xy_noise, transform=self.milli_units)
-        # self.register_measurement(WireScanner.d_sigma_pv, noise=xy_noise, transform=self.milli_units)
+        self.register_measurement(WireScanner.d_sigma_pv, noise=xy_noise, transform=self.milli_units)
         self.register_measurement(WireScanner.x_profile_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.x_axis_pv, transform=self.milli_units, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_profile_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_axis_pv, transform=self.milli_units, definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_profile_pv,
+                                  definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_axis_pv,
+                                  transform=self.milli_units,
+                                  definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.x_trace_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.y_trace_pv, definition={'count': self.trace_bin_number})
+        self.register_measurement(WireScanner.d_trace_pv, definition={'count': self.trace_bin_number})
         self.register_measurement(WireScanner.trace_time_pv, definition={'count': self.trace_bin_number})
         times = np.linspace(0, self.trace_time, self.trace_bin_number)
         self.update_measurement(WireScanner.trace_time_pv, times)
-        # self.register_measurement(WireScanner.d_profile_pv, definition={'count': bin_number})
-        # self.register_measurement(WireScanner.d_axis_pv, transform=self.milli_units, definition={'count': bin_number})
         # PVs for client I/O
         self.register_readback(WireScanner.speed_pv, transform=self.milli_units)
         self.register_setting(WireScanner.d_dx_pv, default=self.d_dx, transform=self.milli_units)
@@ -524,6 +529,7 @@ class WireScanner(Device):
         self.register_setting(WireScanner.stop_2_pv, default=self.stop_2, transform=self.milli_units)
         self.register_setting(WireScanner.stop_3_pv, default=self.stop_3, transform=self.milli_units)
         self.register_setting(WireScanner.command_pv, default=0)
+        self.register_readback(WireScanner.motion_status_pv,self.moving)
         self.register_readback(WireScanner.position_readback_pv, WireScanner.position_pv, transform=self.milli_units,
                                noise=pos_noise)
         self.register_parameter(WireScanner.refresh_rate_pv,default=self.refresh_rate)
@@ -658,7 +664,7 @@ class WireScanner(Device):
         for wire in self.wires:
             position = self.last_wire_pos
             config = wire.config[wire.axis]
-            hist = ws_params[getattr(self, f"{config['key_prefix']}hist_key")]
+            hist = ws_params[getattr(self, config["key_prefix"] + "hist_key")]
             axis = hist[:, 0]
             profile = hist[:, 1]
             wire_pos = wire.position
@@ -724,9 +730,12 @@ class WireScanner(Device):
         self.scan_init = False
         self.scanning = False
         self.speed = self.max_speed
+        #TODO: get correct setting for motion status pv
+        self.server_setting_override(self.motion_status_pv, 5)
     # Performing a scan
     def do_scan(self):
         # Don't interrupt an active scan
+        self.server_setting_override(self.motion_status_pv, 5)
         if self.scanning:
             return
         # Figure out which endpoint is closer and move to it
@@ -764,6 +773,7 @@ class WireScanner(Device):
         self.moving = False
         self.scanning = False
         self.scan_init = False
+        self.server_setting_override(self.motion_status_pv, 0)
         self.speed = 0
 
 
