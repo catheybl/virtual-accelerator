@@ -44,9 +44,9 @@ def test_corrector(va_process):
     original_val = caget(corrector_set)
     settings = [(0.00, 0.0),
                 (0.02, 2.3),
-                (0.04, 5.0),
-                (0.06, 7.7),
-                (0.08, 10.0)]
+                (0.04, 4.8),
+                (0.06, 7.4),
+                (0.08, 9.8)]
 
     for b_set, bpm in settings:
 

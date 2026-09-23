@@ -134,8 +134,8 @@ def build_sns(**kwargs):
         if ele_name in element_list:
             cavity_dict = {}
             initial_settings = model.get_element_parameters(ele_name)
-            cavity_dict['init_amp'] = initial_settings['amp']
-            cavity_dict['init_phase'] = initial_settings['phase']
+            cavity_dict['initial_amp'] = initial_settings['amp']
+            cavity_dict['initial_phase'] = initial_settings['phase']
             if rf_sync_file is not None and name in cav_sync_dict:
                 cavity_dict = cav_sync_dict[name]
             rf_device = SNS_Cavity(name, ele_name, **cavity_dict)

@@ -13118,7 +13118,7 @@
         <accElement length="0.505" name="HEBT_Mag:QV01" pos="1.0" type="QUAD">
             <parameters aperture="0.12" aprt_type="1" field="4.14"/>
         </accElement>
-        <accElement length="0.0" name="HEBT_Diag:BPM01" pos="  1.2512" type="BPM">
+        <accElement length="0.0" name="HEBT_Diag:BPM01" pos="1.2512" type="BPM">
             <parameters freqency="4.025E8" length="0.264" orientation="-1" pos_center="1.383197"/>
         </accElement>
         <accElement length="0.0" name="HEBT_Diag:WS01" pos="2.3625" type="WIRE">
@@ -13229,7 +13229,7 @@
         <accElement length="0.0" name="HEBT_Diag:LW_EMT" pos="39.443" type="MARKER">
             <parameters/>
         </accElement>
-        <accElement length="0.0" name="HEBT_Diag:BPM11" pos=" 41.2488" type="BPM">
+        <accElement length="0.0" name="HEBT_Diag:BPM11" pos="41.2488" type="BPM">
             <parameters freqency="4.025E8" length="0.264" orientation="1" pos_center="41.116803"/>
         </accElement>
         <accElement length="0.505" name="HEBT_Mag:QV11" pos="41.5" type="QUAD">

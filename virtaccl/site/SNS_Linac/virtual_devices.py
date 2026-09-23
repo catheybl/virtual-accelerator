@@ -172,17 +172,14 @@ class Cavity(Device):
     default_initial_amp = 1.0  # [arb. units]
 
     def __init__(self, name: str, model_name: str = None
-                 ,init_phase = 0, init_amp = 1.0,design_amp=1,offset_phase=0):
+                 , initial_phase = 0, initial_amp = 1.0, phase_offset=0, design_amp=1):
         if model_name is None:
             self.model_name = name
         else:
             self.model_name = model_name
         super().__init__(name, self.model_name)
         self.design_amp = design_amp  # [MV]
-        # TODO: spell out initial in config file generation
-        initial_amp = init_amp
-        initial_phase = init_phase
-        phase_offset = offset_phase
+
         # Create old amp variable for ramping
         self.old_amp = initial_amp
 
