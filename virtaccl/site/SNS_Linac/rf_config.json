@@ -1,0 +1,704 @@
+{
+  "RF_Cavity": {
+    "SCL_LLRF:FCM01a": {
+      "design_amp": 9.673027637607074,
+      "initial_amp": 0.9769433474230982,
+      "phase_offset": 103.11301911966962,
+      "initial_phase": 1.936215578583763
+    },
+    "SCL_LLRF:FCM01b": {
+      "design_amp": 14.859598626295845,
+      "initial_amp": 1.0077661164750398,
+      "phase_offset": 19.44900153686345,
+      "initial_phase": 2.056364351168912
+    },
+    "SCL_LLRF:FCM01c": {
+      "design_amp": 10.1849385151186,
+      "initial_amp": 0.8247472468813609,
+      "phase_offset": 86.30878785858931,
+      "initial_phase": 2.1483469321384363
+    },
+    "SCL_LLRF:FCM02a": {
+      "design_amp": 9.835326520130772,
+      "initial_amp": 0.9099850403218742,
+      "phase_offset": 52.98167601915702,
+      "initial_phase": 2.231897795397732
+    },
+    "SCL_LLRF:FCM02b": {
+      "design_amp": 10.872799533559787,
+      "initial_amp": 1.1312633845620939,
+      "phase_offset": 35.39092564305437,
+      "initial_phase": 2.209047078730226
+    },
+    "SCL_LLRF:FCM02c": {
+      "design_amp": 9.546746872704814,
+      "initial_amp": 1.0055781438436837,
+      "phase_offset": -179.2866146375,
+      "initial_phase": 2.276496030701845
+    },
+    "SCL_LLRF:FCM03a": {
+      "design_amp": 10.262326778983189,
+      "initial_amp": 1.3252355233758708,
+      "phase_offset": -49.62530549783014,
+      "initial_phase": 2.327558969110111
+    },
+    "SCL_LLRF:FCM03b": {
+      "design_amp": 9.647421280158037,
+      "initial_amp": 0.7774098157634451,
+      "phase_offset": -51.73538555427331,
+      "initial_phase": 2.5993779440642286
+    },
+    "SCL_LLRF:FCM03c": {
+      "design_amp": 10.543424573658285,
+      "initial_amp": 1.3468109816498626,
+      "phase_offset": 172.62262623747375,
+      "initial_phase": 2.735879939057895
+    },
+    "SCL_LLRF:FCM04a": {
+      "design_amp": 9.466138247736835,
+      "initial_amp": 1.2782403640568918,
+      "phase_offset": 133.6244131155413,
+      "initial_phase": 3.0468140649801145
+    },
+    "SCL_LLRF:FCM04b": {
+      "design_amp": 7.081078781542172,
+      "initial_amp": 1.2709927791595492,
+      "phase_offset": -129.90094623182927,
+      "initial_phase": -2.370175515932432
+    },
+    "SCL_LLRF:FCM04c": {
+      "design_amp": 9.765453839206579,
+      "initial_amp": 1.3721840500849392,
+      "phase_offset": 88.08045012613206,
+      "initial_phase": -2.3024811119990134
+    },
+    "SCL_LLRF:FCM05a": {
+      "design_amp": 9.50622256611391,
+      "initial_amp": 1.1886950806601382,
+      "phase_offset": -165.4248793293661,
+      "initial_phase": -1.0219796496051514
+    },
+    "SCL_LLRF:FCM05b": {
+      "design_amp": 8.059073193403497,
+      "initial_amp": 1.3649212181127361,
+      "phase_offset": 10.92696333992592,
+      "initial_phase": -0.5170706043568436
+    },
+    "SCL_LLRF:FCM05c": {
+      "design_amp": 9.65319073136431,
+      "initial_amp": 1.0670047123936062,
+      "phase_offset": -86.86186490147645,
+      "initial_phase": 0.22989241115864262
+    },
+    "SCL_LLRF:FCM06a": {
+      "design_amp": 9.257667528164735,
+      "initial_amp": 1.1774024036658017,
+      "phase_offset": 60.9464053244354,
+      "initial_phase": 1.8262007352858105
+    },
+    "SCL_LLRF:FCM06b": {
+      "design_amp": 8.214016959711469,
+      "initial_amp": 1.5141191040877604,
+      "phase_offset": -19.745756406980433,
+      "initial_phase": 2.461189246492097
+    },
+    "SCL_LLRF:FCM06c": {
+      "design_amp": 9.556113583147987,
+      "initial_amp": 1.1510955687465119,
+      "phase_offset": -109.85366006298091,
+      "initial_phase": -3.0898670275809135
+    },
+    "SCL_LLRF:FCM07a": {
+      "design_amp": 8.990602017910449,
+      "initial_amp": 1.2457452768666817,
+      "phase_offset": -52.18727582053056,
+      "initial_phase": -1.196121682292871
+    },
+    "SCL_LLRF:FCM07b": {
+      "design_amp": 8.768812159008933,
+      "initial_amp": 1.3114661132505947,
+      "phase_offset": 167.04076163724596,
+      "initial_phase": -0.5045879798292091
+    },
+    "SCL_LLRF:FCM07c": {
+      "design_amp": 9.09719403688218,
+      "initial_amp": 1.2751184544345047,
+      "phase_offset": 153.63034306440738,
+      "initial_phase": 0.2197309652226303
+    },
+    "SCL_LLRF:FCM08a": {
+      "design_amp": 9.98167971718331,
+      "initial_amp": 0.9517436212309933,
+      "phase_offset": -94.44586161044074,
+      "initial_phase": 2.5383695421620533
+    },
+    "SCL_LLRF:FCM08b": {
+      "design_amp": 9.207495830562982,
+      "initial_amp": 1.4661966997789624,
+      "phase_offset": 174.41390522090808,
+      "initial_phase": -2.986234006674805
+    },
+    "SCL_LLRF:FCM08c": {
+      "design_amp": 8.878869902825297,
+      "initial_amp": 1.486675685584682,
+      "phase_offset": -163.82854687181168,
+      "initial_phase": -2.1664851090793813
+    },
+    "SCL_LLRF:FCM09a": {
+      "design_amp": 8.339979611806132,
+      "initial_amp": 1.5827376821538015,
+      "phase_offset": 50.915464991796455,
+      "initial_phase": 0.2048237253762118
+    },
+    "SCL_LLRF:FCM09b": {
+      "design_amp": 8.8906363105825,
+      "initial_amp": 1.0685399411392158,
+      "phase_offset": 29.526630833232957,
+      "initial_phase": 1.1333708995431315
+    },
+    "SCL_LLRF:FCM09c": {
+      "design_amp": 8.512413596600135,
+      "initial_amp": 1.3862108397450201,
+      "phase_offset": 65.51327085936734,
+      "initial_phase": 1.995203313614588
+    },
+    "SCL_LLRF:FCM10a": {
+      "design_amp": 8.208185419742202,
+      "initial_amp": 1.059917576797777,
+      "phase_offset": 14.651623601899928,
+      "initial_phase": -1.898632404103367
+    },
+    "SCL_LLRF:FCM10b": {
+      "design_amp": 9.366991405717764,
+      "initial_amp": 0.7900081978812236,
+      "phase_offset": -47.35149829885131,
+      "initial_phase": -1.0494403289760565
+    },
+    "SCL_LLRF:FCM10c": {
+      "design_amp": 7.075786545940128,
+      "initial_amp": 1.4132704449285143,
+      "phase_offset": 68.82356275642107,
+      "initial_phase": -0.1698652647565224
+    },
+    "SCL_LLRF:FCM11a": {
+      "design_amp": 8.605877513105046,
+      "initial_amp": 1.1038967247132419,
+      "phase_offset": 64.52568094398168,
+      "initial_phase": 2.1480520921775197
+    },
+    "SCL_LLRF:FCM11b": {
+      "design_amp": 10.179042352741954,
+      "initial_amp": 1.159244611731221,
+      "phase_offset": 90.30123829276448,
+      "initial_phase": 2.904031730107521
+    },
+    "SCL_LLRF:FCM11c": {
+      "design_amp": 8.906017942530974,
+      "initial_amp": 1.0947653668469004,
+      "phase_offset": 157.97359802133462,
+      "initial_phase": -2.629212819889088
+    },
+    "SCL_LLRF:FCM12a": {
+      "design_amp": 15.425716476298312,
+      "initial_amp": 0.680681511042505,
+      "phase_offset": 63.49161504547624,
+      "initial_phase": -2.4887804347424445
+    },
+    "SCL_LLRF:FCM12b": {
+      "design_amp": 16.117835093017263,
+      "initial_amp": 0.6855759434334452,
+      "phase_offset": 161.99324771360432,
+      "initial_phase": -1.5798414557382252
+    },
+    "SCL_LLRF:FCM12c": {
+      "design_amp": 16.80139216932862,
+      "initial_amp": 0.6189963245418123,
+      "phase_offset": 51.248482690186734,
+      "initial_phase": -0.8181315114053677
+    },
+    "SCL_LLRF:FCM12d": {
+      "design_amp": 14.917379910624017,
+      "initial_amp": 0.5365084249346043,
+      "phase_offset": -142.89452858663566,
+      "initial_phase": -0.061356550922946285
+    },
+    "SCL_LLRF:FCM13a": {
+      "design_amp": 13.041655254008258,
+      "initial_amp": 0.9201286007243511,
+      "phase_offset": 27.836203838183195,
+      "initial_phase": 1.4061035009292737
+    },
+    "SCL_LLRF:FCM13b": {
+      "design_amp": 16.34175143944741,
+      "initial_amp": 0.8016276620373667,
+      "phase_offset": -179.4102683281047,
+      "initial_phase": 2.0640659632024367
+    },
+    "SCL_LLRF:FCM13c": {
+      "design_amp": 14.742350171037511,
+      "initial_amp": 0.8919880376898246,
+      "phase_offset": 115.7552660946194,
+      "initial_phase": 2.6133466579539597
+    },
+    "SCL_LLRF:FCM13d": {
+      "design_amp": 14.73494631587375,
+      "initial_amp": 0.6243660345127263,
+      "phase_offset": -73.96995549458904,
+      "initial_phase": -3.1225693415090117
+    },
+    "SCL_LLRF:FCM14a": {
+      "design_amp": 14.691406508327475,
+      "initial_amp": 0.9529380316353259,
+      "phase_offset": -123.37230005650537,
+      "initial_phase": -2.040249752022371
+    },
+    "SCL_LLRF:FCM14b": {
+      "design_amp": 14.153249985156522,
+      "initial_amp": 0.748944589484178,
+      "phase_offset": 64.60996274356577,
+      "initial_phase": -1.587079598468559
+    },
+    "SCL_LLRF:FCM14c": {
+      "design_amp": 15.386766451957138,
+      "initial_amp": 0.9098727821542553,
+      "phase_offset": 54.537227695521324,
+      "initial_phase": -1.172673245159009
+    },
+    "SCL_LLRF:FCM14d": {
+      "design_amp": 15.479909160253463,
+      "initial_amp": 0.865638154673809,
+      "phase_offset": -94.30564807182776,
+      "initial_phase": -0.8676791266417972
+    },
+    "SCL_LLRF:FCM15a": {
+      "design_amp": 15.715631899456334,
+      "initial_amp": 0.8335649551866369,
+      "phase_offset": -34.06161820029999,
+      "initial_phase": -0.12123723350537462
+    },
+    "SCL_LLRF:FCM15b": {
+      "design_amp": 16.34957539763435,
+      "initial_amp": 0.8685240842434735,
+      "phase_offset": -165.1149162348087,
+      "initial_phase": 0.11475393634024061
+    },
+    "SCL_LLRF:FCM15c": {
+      "design_amp": 19.161317295948674,
+      "initial_amp": 0.7880460287139356,
+      "phase_offset": -117.51628210874614,
+      "initial_phase": 0.5433259198723037
+    },
+    "SCL_LLRF:FCM15d": {
+      "design_amp": 15.542930817770738,
+      "initial_amp": 0.8492606802899753,
+      "phase_offset": 123.69683534011943,
+      "initial_phase": 0.8062228152308022
+    },
+    "SCL_LLRF:FCM16a": {
+      "design_amp": 15.470879235760885,
+      "initial_amp": 0.904925944198378,
+      "phase_offset": -52.072954473756084,
+      "initial_phase": 1.386523669786483
+    },
+    "SCL_LLRF:FCM16b": {
+      "design_amp": 16.13457258989824,
+      "initial_amp": 0.9358785251896923,
+      "phase_offset": -123.01084267552605,
+      "initial_phase": 1.5944951522069153
+    },
+    "SCL_LLRF:FCM16c": {
+      "design_amp": 14.545525701949588,
+      "initial_amp": 0.8937456277883146,
+      "phase_offset": -67.48611581364305,
+      "initial_phase": 1.7320318644235226
+    },
+    "SCL_LLRF:FCM16d": {
+      "design_amp": 15.925544681860192,
+      "initial_amp": 0.8728115915452885,
+      "phase_offset": -135.37686688984328,
+      "initial_phase": 1.9059844864299051
+    },
+    "SCL_LLRF:FCM17a": {
+      "design_amp": 15.934930459927449,
+      "initial_amp": 0.8848485429828601,
+      "phase_offset": 152.90539832004066,
+      "initial_phase": 2.2449926115516
+    },
+    "SCL_LLRF:FCM17b": {
+      "design_amp": 16.016557444147963,
+      "initial_amp": 0.8428777561642967,
+      "phase_offset": 90.44758851499876,
+      "initial_phase": 2.364090560179453
+    },
+    "SCL_LLRF:FCM17c": {
+      "design_amp": 16.326291543446093,
+      "initial_amp": 0.8513874668359647,
+      "phase_offset": -164.02205422762722,
+      "initial_phase": 2.50863249351217
+    },
+    "SCL_LLRF:FCM17d": {
+      "design_amp": 16.072978458020145,
+      "initial_amp": 0.8336973781803102,
+      "phase_offset": 157.6432288127794,
+      "initial_phase": 2.7425365798774384
+    },
+    "SCL_LLRF:FCM18a": {
+      "design_amp": 16.140741515052888,
+      "initial_amp": 0.8363928006287613,
+      "phase_offset": 131.5935726848204,
+      "initial_phase": 2.7924295414926346
+    },
+    "SCL_LLRF:FCM18b": {
+      "design_amp": 15.777822862271238,
+      "initial_amp": 0.7906667547796393,
+      "phase_offset": 115.95069697032955,
+      "initial_phase": 2.8889615332290948
+    },
+    "SCL_LLRF:FCM18c": {
+      "design_amp": 14.94929430927539,
+      "initial_amp": 0.8027134760839192,
+      "phase_offset": -114.3282499659561,
+      "initial_phase": 2.9668721049015927
+    },
+    "SCL_LLRF:FCM18d": {
+      "design_amp": 16.2950273317266,
+      "initial_amp": 0.6075473086641953,
+      "phase_offset": -129.2889963387838,
+      "initial_phase": 2.9929778038821984
+    },
+    "SCL_LLRF:FCM19a": {
+      "design_amp": 22.344922367282944,
+      "initial_amp": 0.5370347590721638,
+      "phase_offset": -58.85378055283449,
+      "initial_phase": 2.969045573662062
+    },
+    "SCL_LLRF:FCM19b": {
+      "design_amp": 14.787948720965726,
+      "initial_amp": 0.8892375980014381,
+      "phase_offset": -80.78745653792156,
+      "initial_phase": 2.9174654391385726
+    },
+    "SCL_LLRF:FCM19c": {
+      "design_amp": 15.969167642347701,
+      "initial_amp": 0.7827583929203662,
+      "phase_offset": 81.0313372493091,
+      "initial_phase": 2.85481171808376
+    },
+    "SCL_LLRF:FCM19d": {
+      "design_amp": 15.746272980858828,
+      "initial_amp": 0.831942899499098,
+      "phase_offset": 171.67517401906906,
+      "initial_phase": 2.7039308531539787
+    },
+    "SCL_LLRF:FCM20a": {
+      "design_amp": 15.918434823960043,
+      "initial_amp": 0.8606373774498917,
+      "phase_offset": -116.04685751378565,
+      "initial_phase": 2.3716905270964754
+    },
+    "SCL_LLRF:FCM20b": {
+      "design_amp": 16.293696087039123,
+      "initial_amp": 0.853090663146516,
+      "phase_offset": -53.08171036101349,
+      "initial_phase": 2.276235902004528
+    },
+    "SCL_LLRF:FCM20c": {
+      "design_amp": 16.611058083952983,
+      "initial_amp": 0.860872313354586,
+      "phase_offset": 119.92562749923013,
+      "initial_phase": 2.2548671751864546
+    },
+    "SCL_LLRF:FCM20d": {
+      "design_amp": 17.034219497790094,
+      "initial_amp": 0.5870536070817529,
+      "phase_offset": 149.61097988040422,
+      "initial_phase": 2.156965507230383
+    },
+    "SCL_LLRF:FCM21a": {
+      "design_amp": 17.31246870267247,
+      "initial_amp": 0.8259942730058225,
+      "phase_offset": -47.38446839580894,
+      "initial_phase": 1.7506955878470207
+    },
+    "SCL_LLRF:FCM21b": {
+      "design_amp": 16.557635309139073,
+      "initial_amp": 0.7730572488774997,
+      "phase_offset": 10.519160443482576,
+      "initial_phase": 1.604146768533474
+    },
+    "SCL_LLRF:FCM21c": {
+      "design_amp": 15.995699528009153,
+      "initial_amp": 0.8939902862616349,
+      "phase_offset": -158.38696115054137,
+      "initial_phase": 1.4735109962377666
+    },
+    "SCL_LLRF:FCM21d": {
+      "design_amp": 14.808227777140397,
+      "initial_amp": 0.9184083473509538,
+      "phase_offset": -96.10485524796809,
+      "initial_phase": 1.302623960826412
+    },
+    "SCL_LLRF:FCM22a": {
+      "design_amp": 14.91961514156123,
+      "initial_amp": 0.9249568349492915,
+      "phase_offset": 124.65274633995443,
+      "initial_phase": 0.8431206289638763
+    },
+    "SCL_LLRF:FCM22b": {
+      "design_amp": 15.677844604148717,
+      "initial_amp": 0.6633564920810557,
+      "phase_offset": -163.89369946073228,
+      "initial_phase": 0.7311829914307512
+    },
+    "SCL_LLRF:FCM22c": {
+      "design_amp": 16.07884320527644,
+      "initial_amp": 0.5286449958794696,
+      "phase_offset": 47.970629530338044,
+      "initial_phase": 0.5674653656162963
+    },
+    "SCL_LLRF:FCM22d": {
+      "design_amp": 15.29648857329603,
+      "initial_amp": 0.9021678363550354,
+      "phase_offset": 111.75636308527726,
+      "initial_phase": 0.42156049049315614
+    },
+    "SCL_LLRF:FCM23a": {
+      "design_amp": 16.041527454930048,
+      "initial_amp": 0.8727348464374179,
+      "phase_offset": 28.530743965921005,
+      "initial_phase": -0.08150240743045958
+    },
+    "SCL_LLRF:FCM23b": {
+      "design_amp": 15.07930443246496,
+      "initial_amp": 0.8455297163806781,
+      "phase_offset": 126.83167595475703,
+      "initial_phase": -0.28783404458248957
+    },
+    "SCL_LLRF:FCM23c": {
+      "design_amp": 14.973703246066629,
+      "initial_amp": 0.8014049565963065,
+      "phase_offset": -5.6585162134606435,
+      "initial_phase": -0.5221585959871321
+    },
+    "SCL_LLRF:FCM23d": {
+      "design_amp": 15.159123195430425,
+      "initial_amp": 0.8905528259094463,
+      "phase_offset": 23.714960167288268,
+      "initial_phase": -0.726213353250351
+    },
+    "SCL_LLRF:FCM25a": {
+      "design_amp": 15.856361224417773,
+      "initial_amp": 0.945992575957526,
+      "phase_offset": 63.394269232909664,
+      "initial_phase": -2.584627881694091
+    },
+    "SCL_LLRF:FCM25b": {
+      "design_amp": 15.91121785777046,
+      "initial_amp": 0.9427311054429781,
+      "phase_offset": 44.93623672926719,
+      "initial_phase": -2.7469080282489435
+    },
+    "SCL_LLRF:FCM25c": {
+      "design_amp": 15.150519025592962,
+      "initial_amp": 0.8250542426226071,
+      "phase_offset": -170.76059909508513,
+      "initial_phase": -2.9236778402965338
+    },
+    "SCL_LLRF:FCM25d": {
+      "design_amp": 15.35793993910661,
+      "initial_amp": 0.7862382616338333,
+      "phase_offset": 29.72827888637167,
+      "initial_phase": -3.0979293831903196
+    },
+    "SCL_LLRF:FCM27a": {
+      "design_amp": 14.814395912708386,
+      "initial_amp": 0.9787776758120332,
+      "phase_offset": -108.74382301093951,
+      "initial_phase": 1.7672771689548166
+    },
+    "SCL_LLRF:FCM27b": {
+      "design_amp": 16.55578373775157,
+      "initial_amp": 0.9664296328971587,
+      "phase_offset": -76.18663228918828,
+      "initial_phase": 1.6748464390344389
+    },
+    "SCL_LLRF:FCM27c": {
+      "design_amp": 15.865130869479124,
+      "initial_amp": 0.9769853225615962,
+      "phase_offset": 125.37376531415691,
+      "initial_phase": 1.5733486035434776
+    },
+    "SCL_LLRF:FCM27d": {
+      "design_amp": 16.533011300833987,
+      "initial_amp": 0.9677607853079312,
+      "phase_offset": -68.90445581688692,
+      "initial_phase": 1.4659623541330602
+    },
+    "SCL_LLRF:FCM28a": {
+      "design_amp": 15.196378199651804,
+      "initial_amp": 1.019979879176418,
+      "phase_offset": -96.35883180821332,
+      "initial_phase": 1.089798102737327
+    },
+    "SCL_LLRF:FCM28b": {
+      "design_amp": 15.174722047779596,
+      "initial_amp": 0.9884859803540743,
+      "phase_offset": 8.275519958492083,
+      "initial_phase": 1.0016702893169251
+    },
+    "SCL_LLRF:FCM28c": {
+      "design_amp": 14.2313417063475,
+      "initial_amp": 1.0540116532589237,
+      "phase_offset": -108.9326820721158,
+      "initial_phase": 0.9444095626582883
+    },
+    "SCL_LLRF:FCM28d": {
+      "design_amp": 15.10526944332773,
+      "initial_amp": 0.9930309456760978,
+      "phase_offset": -90.27615410777,
+      "initial_phase": 0.8971368317981148
+    },
+    "SCL_LLRF:FCM29a": {
+      "design_amp": 14.399526987137595,
+      "initial_amp": 1.1111476102160878,
+      "phase_offset": 13.167220444094994,
+      "initial_phase": 0.737083602226971
+    },
+    "SCL_LLRF:FCM29b": {
+      "design_amp": 15.076020625149745,
+      "initial_amp": 1.0612880147768489,
+      "phase_offset": 162.57655588791454,
+      "initial_phase": 0.6723609389639142
+    },
+    "SCL_LLRF:FCM29c": {
+      "design_amp": 15.10229957612394,
+      "initial_amp": 1.0594413068917852,
+      "phase_offset": 38.767492733986415,
+      "initial_phase": 0.7341641500210152
+    },
+    "SCL_LLRF:FCM29d": {
+      "design_amp": 15.013753713901828,
+      "initial_amp": 1.0656895207482302,
+      "phase_offset": -97.0869959501646,
+      "initial_phase": 0.753284034477791
+    },
+    "SCL_LLRF:FCM30a": {
+      "design_amp": 15.784767072267202,
+      "initial_amp": 1.0136354832952175,
+      "phase_offset": -174.35446442143947,
+      "initial_phase": 0.7854760822507638
+    },
+    "SCL_LLRF:FCM30b": {
+      "design_amp": 15.311467479492194,
+      "initial_amp": 0.9796578949790824,
+      "phase_offset": 117.80219532551001,
+      "initial_phase": 0.8625034006772949
+    },
+    "SCL_LLRF:FCM30c": {
+      "design_amp": 15.0369516429327,
+      "initial_amp": 0.980916900596168,
+      "phase_offset": -53.69139872183456,
+      "initial_phase": 0.8849587029400175
+    },
+    "SCL_LLRF:FCM30d": {
+      "design_amp": 14.559320193457793,
+      "initial_amp": 1.0474390148279424,
+      "phase_offset": -4.318894545306591,
+      "initial_phase": 0.9355469984149086
+    },
+    "SCL_LLRF:FCM31a": {
+      "design_amp": 12.339877016655675,
+      "initial_amp": 0.9724570175053667,
+      "phase_offset": 18.862936006277522,
+      "initial_phase": 0.9693744367513284
+    },
+    "SCL_LLRF:FCM31b": {
+      "design_amp": 15.809548161847593,
+      "initial_amp": 0.8539143473169517,
+      "phase_offset": 152.35586269304025,
+      "initial_phase": 1.0050327929269482
+    },
+    "SCL_LLRF:FCM31c": {
+      "design_amp": 15.16801600051192,
+      "initial_amp": 0.9229948069363522,
+      "phase_offset": 111.19378273727227,
+      "initial_phase": 1.0150174717397629
+    },
+    "SCL_LLRF:FCM31d": {
+      "design_amp": 15.175154046328196,
+      "initial_amp": 1.0214064353271197,
+      "phase_offset": -138.53947049882663,
+      "initial_phase": 0.9702716495223391
+    },
+    "SCL_LLRF:FCM32a": {
+      "design_amp": 15.0,
+      "initial_amp": 1.0,
+      "phase_offset": -46.283281356796465,
+      "initial_phase": 3.000627320508682
+    },
+    "SCL_LLRF:FCM32b": {
+      "design_amp": 15.120311891235227,
+      "initial_amp": 1.058179230368568,
+      "phase_offset": 130.99257646308416,
+      "initial_phase": 1.144192889843608
+    },
+    "SCL_LLRF:FCM32c": {
+      "design_amp": 15.246870227051826,
+      "initial_amp": 0.918221234359327,
+      "phase_offset": 92.97587961603688,
+      "initial_phase": 1.1823579495675611
+    },
+    "SCL_LLRF:FCM32d": {
+      "design_amp": 15.025058407906446,
+      "initial_amp": 1.064887707297066,
+      "phase_offset": 175.13467254073794,
+      "initial_phase": 1.0169218039167853
+    }
+  },
+  "BPM": {
+    "SCL_Diag:BPM00a": -86.85415,
+    "SCL_Diag:BPM00b": -89.33415,
+    "SCL_Diag:BPM01": -18.064149999999984,
+    "SCL_Diag:BPM02": -15.434149999999988,
+    "SCL_Diag:BPM03": -39.05414999999999,
+    "SCL_Diag:BPM04": -38.26415,
+    "SCL_Diag:BPM05": -45.21415000000002,
+    "SCL_Diag:BPM06": -40.814149999999984,
+    "SCL_Diag:BPM07": -95.47415000000001,
+    "SCL_Diag:BPM08": -92.21414999999999,
+    "SCL_Diag:BPM09": 86.76585,
+    "SCL_Diag:BPM10": 80.94585000000001,
+    "SCL_Diag:BPM11": 95.11585000000002,
+    "SCL_Diag:BPM12": 108.46585000000005,
+    "SCL_Diag:BPM13": -89.92415,
+    "SCL_Diag:BPM14": -88.43415,
+    "SCL_Diag:BPM15": -6.98415,
+    "SCL_Diag:BPM16": -2.334149999999994,
+    "SCL_Diag:BPM17": 151.58585,
+    "SCL_Diag:BPM18": 157.70585,
+    "SCL_Diag:BPM19": 73.88585,
+    "SCL_Diag:BPM20": 76.17584999999997,
+    "SCL_Diag:BPM21": 86.37585000000001,
+    "SCL_Diag:BPM23": -118.13415,
+    "SCL_Diag:BPM24": -99.74414999999999,
+    "SCL_Diag:BPM25": -175.15415,
+    "SCL_Diag:BPM26": -168.05415,
+    "SCL_Diag:BPM27": 48.03585000000001,
+    "SCL_Diag:BPM28": 27.865849999999995,
+    "SCL_Diag:BPM29": -129.57415,
+    "SCL_Diag:BPM30": -136.57415,
+    "SCL_Diag:BPM31": -59.714150000000004,
+    "SCL_Diag:BPM32": -57.55414999999999,
+    "HEBT_Diag:BPM01": -36.334149999999994,
+    "HEBT_Diag:BPM02": -49.24414999999999,
+    "HEBT_Diag:BPM03": -146.32415,
+    "HEBT_Diag:BPM04": -140.77415,
+    "HEBT_Diag:BPM05": -157.00415,
+    "HEBT_Diag:BPM06": 177.54584999999997,
+    "HEBT_Diag:BPM07": 112.31585000000001,
+    "HEBT_Diag:BPM08": 100.19585000000001,
+    "HEBT_Diag:BPM09": 99.50585000000001,
+    "HEBT_Diag:BPM10": -123.73415,
+    "HEBT_Diag:BPM11": -36.77414999999999
+  }
+}

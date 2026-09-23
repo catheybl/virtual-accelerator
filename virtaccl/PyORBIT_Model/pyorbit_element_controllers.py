@@ -279,8 +279,8 @@ class PyorbitChild(PyorbitElement):
         Returns
         ----------
         out : float
-            The position of the ancestor node relative to its sequence in meters.
+            The position of the child node relative to its sequence start in meters.
         """
 
-        position = self.ancestor_node.getPosition()
+        position = self.child.getPosition()
         return position

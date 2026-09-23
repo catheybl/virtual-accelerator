@@ -16,7 +16,9 @@ class PhysicsClass(BaseLinacNode):
                       'position', 'energy', 'beta', 'part_num']
 
     def __init__(self, node_name: str):
-        parameters = {'x_beta': 0.0, 'x_alpha': 0.0, 'y_beta': 0.0, 'y_alpha': 0.0,
+        parameters = {'x_beta': 0.0, 'x_alpha': 0.0, 'x_emit': 0.0,
+                      'y_beta': 0.0, 'y_alpha': 0.0, 'y_emit': 0.0,
+                      'z_beta': 0.0, 'z_alpha': 0.0, 'z_emit': 0.0,
                       'position': 0.0, 'energy': 0.0, 'beta': 0.0, 'part_num': 0}
         BaseLinacNode.__init__(self, node_name)
         for key, value in parameters.items():

@@ -418,6 +418,7 @@ class OrbitModel(Model):
             ancestor = parent.get_ancestor_node()
         else:
             ancestor = parent.get_element()
+        child_node.setPosition(parent.get_position())
         ancestor.addChildNode(child_node, ancestor.ENTRANCE)
         self.get_element_dictionary()[child_name] = PyorbitChild(child_node, ancestor)
 
