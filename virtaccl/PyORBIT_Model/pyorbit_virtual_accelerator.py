@@ -4,9 +4,6 @@ from virtaccl.server import Server
 from virtaccl.virtual_accelerator import VA_Parser, VirtualAcceleratorBuilder
 from virtaccl.PyORBIT_Model.pyorbit_va_nodes import PhysicsClass
 
-from orbit.core.bunch import Bunch
-
-
 def add_pyorbit_arguments(va_parser: VA_Parser) -> VA_Parser:
     # Lattice xml input file and the sequences desired from that file.
     va_parser.add_model_argument('--lattice', type=str, help='Pathname of lattice file.')
