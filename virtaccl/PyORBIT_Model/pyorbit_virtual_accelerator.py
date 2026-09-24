@@ -4,6 +4,8 @@ from virtaccl.server import Server
 from virtaccl.virtual_accelerator import VA_Parser, VirtualAcceleratorBuilder
 from virtaccl.PyORBIT_Model.pyorbit_va_nodes import PhysicsClass
 
+from orbit.core.bunch import Bunch
+
 
 def add_pyorbit_arguments(va_parser: VA_Parser) -> VA_Parser:
     # Lattice xml input file and the sequences desired from that file.
@@ -27,6 +29,8 @@ def add_pyorbit_arguments(va_parser: VA_Parser) -> VA_Parser:
     va_parser.add_model_argument('--bunch', type=str, help='Pathname of input bunch file.')
     va_parser.add_model_argument('--particle_number', default=1000, type=int,
                                  help='Number of particles to use.')
+    va_parser.add_model_argument('--reference_particle', action='store_true',
+                                 help='Use a single particle at the reference location, using the energy from the bunch file.')
     va_parser.add_model_argument('--beam_current', default=38.0, type=float,
                                  help='Initial beam current in mA.')
     va_parser.add_model_argument('--save_bunch', const='end_bunch.dat', nargs='?', type=str,
@@ -45,18 +49,29 @@ class PyorbitVirtualAcceleratorBuilder(VirtualAcceleratorBuilder[OrbitModel, Ser
 
     # If the user wants to add physics nodes to specific devices this will
     # populate the model with them.
-    def add_some_physics_nodes(self,physics_devices: list[str] = None):
-        if physics_devices is None:
-            return
-        else:
-            for device_name in physics_devices:
-                device = self.beam_line.get_device(device_name)
-                physics_name = f"{device.name}:Physics"
-                physics_child = PhysicsClass(physics_name)
-                self.model.add_child_node(device_name, physics_child)
-                phys_device = PhysicsDevice(physics_name)
-                self.beam_line.add_device(phys_device)
+    def add_physics_node(self, physics_device: str, force_track: bool = True) -> str:
+        device = self.beam_line.get_device(physics_device)
+        physics_name = f"{device.name}:Physics"
+        physics_child = PhysicsClass(physics_name)
+        self.model.add_child_node(physics_device, physics_child)
+        phys_device = PhysicsDevice(physics_name)
+        self.beam_line.add_device(phys_device)
+
+        if force_track:
             self.model.force_track()
+
+        return physics_name
+
+    def add_physics_nodes(self, physics_devices: list[str] | None = None) -> list[str] | None:
+        if physics_devices is None:
+            return None
+
+        device_list = [
+            self.add_physics_node(device_name, force_track=False) for device_name in physics_devices
+        ]
+
+        self.model.force_track()
+        return device_list
 
     def add_all_physics_nodes(self):
         physics_elements = self.model.add_physics_nodes()
