@@ -7,7 +7,6 @@ from orbit.py_linac.lattice import LinacPhaseApertureNode
 from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice, Add_rfgap_apertures_to_lattice
 from orbit.core.bunch import Bunch
 from orbit.core.linac import BaseRfGap, RfGapTTF
-from virtaccl import beam_line
 
 from virtaccl.site.SNS_Linac.orbit_model.sns_linac_lattice_factory import PyORBIT_Lattice_Factory
 from virtaccl.site.SNS_Linac.virtual_devices import (BPM, Quadrupole, Corrector, WireScanner, Quadrupole_Power_Supply,
@@ -21,7 +20,7 @@ from virtaccl.PyORBIT_Model.pyorbit_va_nodes import BPMclass, WSclass, \
     PhysicsClass
 
 from virtaccl.EPICS_Server.ca_server import EPICS_Server, add_epics_arguments
-from virtaccl.beam_line import BeamLine, PhysicsDevice
+from virtaccl.beam_line import BeamLine
 
 from virtaccl.virtual_accelerator import VA_Parser
 
@@ -98,15 +97,19 @@ def build_sns(**kwargs):
     bunch_macrosize /= math.fabs(bunch_in.charge()) * si_e_charge
     bunch_in.macroSize(bunch_macrosize / part_num)
 
-    if bunch_orig_num < part_num:
-        print('Bunch file contains less particles than the desired number of particles.')
-    elif part_num <= 0:
+    if kwargs['reference_particle']:
         bunch_in.deleteAllParticles()
+        bunch_in.addParticle(0, 0, 0, 0, 0, 0)
     else:
-        for n in range(bunch_orig_num):
-            if n + 1 > part_num:
-                bunch_in.deleteParticleFast(n)
-        bunch_in.compress()
+        if bunch_orig_num < part_num:
+            print('Bunch file contains less particles than the desired number of particles.')
+        elif part_num <= 0:
+            bunch_in.deleteAllParticles()
+        else:
+            for n in range(bunch_orig_num):
+                if n + 1 > part_num:
+                    bunch_in.deleteParticleFast(n)
+            bunch_in.compress()
 
     space_charge = kwargs['space_charge']
     model = OrbitModel(debug=debug, save_bunch=save_bunch)
@@ -254,7 +257,7 @@ def build_sns(**kwargs):
     physics_devices = [
 
     ]
-    sns_virac.add_some_physics_nodes(physics_devices)
+    sns_virac.add_physics_nodes(physics_devices)
 
     return sns_virac
 
