@@ -80,7 +80,6 @@ def build_sns(**kwargs):
     Add_quad_apertures_to_lattice(model_lattice)
     Add_rfgap_apertures_to_lattice(model_lattice)
 
-    part_num = kwargs['particle_number']
     beam_current = kwargs['beam_current'] / 1000  # Set the initial beam current in Amps.
     bunch_frequency = 402.5e6
     si_e_charge = 1.6021773e-19
@@ -95,12 +94,13 @@ def build_sns(**kwargs):
     bunch_orig_num = bunch_in.getSizeGlobal()
     bunch_macrosize = beam_current * 1.0e-3 / bunch_frequency
     bunch_macrosize /= math.fabs(bunch_in.charge()) * si_e_charge
-    bunch_in.macroSize(bunch_macrosize / part_num)
 
     if kwargs['reference_particle']:
         bunch_in.deleteAllParticles()
         bunch_in.addParticle(0, 0, 0, 0, 0, 0)
+        bunch_in.macroSize(bunch_macrosize)
     else:
+        part_num = kwargs['particle_number']
         if bunch_orig_num < part_num:
             print('Bunch file contains less particles than the desired number of particles.')
         elif part_num <= 0:
@@ -110,6 +110,7 @@ def build_sns(**kwargs):
                 if n + 1 > part_num:
                     bunch_in.deleteParticleFast(n)
             bunch_in.compress()
+            bunch_in.macroSize(bunch_macrosize / part_num)
 
     space_charge = kwargs['space_charge']
     model = OrbitModel(debug=debug, save_bunch=save_bunch)
